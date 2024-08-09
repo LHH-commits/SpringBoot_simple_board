@@ -1,0 +1,10 @@
+package com.lcomputerstudy.example.domain;
+
+public class Board {
+
+	private int bId;
+	private String bTitle;
+	private String bContent;
+	private String bWriter;
+	private String bDateTime;
+}
