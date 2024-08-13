@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.demo.mapper.UserMapper">
+<mapper namespace="com.lcomputerstudy.example.mapper.UserMapper">
 	<!-- 권한 읽기 -->
     <select id="readAuthorities" parameterType="String" resultType="org.springframework.security.core.authority.SimpleGrantedAuthority">
-       SELECT         u_auth
+       SELECT       u_auth
        FROM         lc_auth
-       WHERE          1=1
-       AND            u_id = #{username}
+       WHERE        1=1
+       AND          u_id = #{username}
     </select>
 
    <!-- 회원 불러오기 -->
    <select id="readUser" parameterType="String" resultType="User">
-      SELECT         u_id                 						    as   username,
-			                 u_password             					as password,
-			                 u_name                						as   uName,
-			                 u_isAccountNonExpired        as isAccountNonExpired,
-			                 u_isAccountNonLocked    	    as isAccountNonLocked,
-			                 u_isCredentialNonExpired    as isCredentialsNonExpired,
-			                 u_isEnabled          				    as isEnabled
-      FROM         lc_user
-      WHERE         1=1
-      AND            u_id   =   #{username}
+      SELECT	u_id as username,
+			    u_password as password,
+			    u_name as uName,
+			    u_isAccountNonExpired as isAccountNonExpired,
+			    u_isAccountNonLocked as isAccountNonLocked,
+			    u_isCredentialNonExpired as isCredentialsNonExpired,
+			    u_isEnabled as isEnabled
+      FROM      lc_user
+      WHERE     1=1
+      AND       u_id = #{username}
    </select>
    
    <!-- 회원 등록 -->
