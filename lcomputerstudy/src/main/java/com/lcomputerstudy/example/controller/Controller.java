@@ -1,5 +1,6 @@
 package com.lcomputerstudy.example.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import com.lcomputerstudy.example.domain.Board;
 import com.lcomputerstudy.example.domain.User;
@@ -9,14 +10,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @org.springframework.stereotype.Controller
 public class Controller {
@@ -32,6 +34,8 @@ public class Controller {
 		model.addAttribute("list", list);
 		return "/list";
 	}
+	
+	@PostMapping("/insertBoard")
 	
 	@GetMapping("/")
 	public String home() {
@@ -58,7 +62,12 @@ public class Controller {
 	    user.setEnabled(true);
 	    user.setAccountNonLocked(true);
 	    user.setCredentialsNonExpired(true);
-	    user.setAuthorities(AuthorityUtils.createAuthorityList("ROLE_USER"));   
+	    user.setAuthorities(AuthorityUtils.createAuthorityList("ROLE_USER"));
+	    
+	    /*List<GrantedAuthority> authorities = new ArrayList<>();
+	    authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+	    authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+	    user.setAuthorities(authorities);*/
 	      
 	    //유저 생성
 	    userservice.createUser(user);

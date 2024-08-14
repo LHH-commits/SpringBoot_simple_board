@@ -7,5 +7,21 @@
 				        	b_content as bContent,
 				        	b_writer as bWriter
 	      FROM          lc_board
-	   </select>
+	</select>
+	
+	<insert id="insertBoard" parameterType="Board">
+		INSERT INTO	lc_board (
+			b_id,
+			b_title,
+			b_content,
+			b_writer,
+			b_datetime
+		) VALUES (
+			#{bId},
+			#{bTitle},
+			#{bContent},
+			#{bWriter},
+			#{bDatetime}
+		)
+	</insert>
 </mapper>
