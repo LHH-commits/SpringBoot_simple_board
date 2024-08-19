@@ -3,25 +3,26 @@
 <mapper namespace="com.lcomputerstudy.example.mapper.BoardMapper">
 	<select id="selectBoardList" resultType="Board">
 	      SELECT		b_id as bId,
-				        	b_title as bTitle,
-				        	b_content as bContent,
-				        	b_writer as bWriter
+				        b_title as bTitle,
+				        b_content as bContent,
+				        b_writer as bWriter,
+				        b_datetime as bDateTime	
 	      FROM          lc_board
 	</select>
 	
 	<insert id="insertBoard" parameterType="Board">
 		INSERT INTO	lc_board (
-			b_id,
 			b_title,
 			b_content,
-			b_writer,
-			b_datetime
+			b_writer
 		) VALUES (
-			#{bId},
 			#{bTitle},
 			#{bContent},
-			#{bWriter},
-			#{bDatetime}
+			#{bWriter}
 		)
 	</insert>
+	
+	<select id="selectBoardBid" parameterType="Int" resultType="Board">
+		SELECT		
+	</select>
 </mapper>

@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @org.springframework.stereotype.Controller
 public class Controller {
@@ -28,6 +29,7 @@ public class Controller {
 	@Autowired BoardService boardservice;
 	@Autowired PasswordEncoder passwordEncoder;
 	
+	// Model은 컨트롤러와 뷰 사이의 데이터를 전달하는 역할을 수행
 	@GetMapping("/list")
 	public String list(Model model) {
 		List<Board> list = boardservice.selectBoardList();
@@ -35,7 +37,27 @@ public class Controller {
 		return "/list";
 	}
 	
+	//게시물 제목 클릭시 상세보기
+	@GetMapping("/detailBoard")
+	public String detailBoard(@RequestParam("bId") int bId, Model model) {
+		Board boardID = boardservice.selectBoardBid(bId);
+		model.addAttribute("board", boardID);
+		return "/detail_board";
+	}
+	
+	// 사용자가 입력할 게시물 폼
+	@GetMapping("/insertBoard")
+	public String insertBoardform(Model model) {
+		model.addAttribute("board", new Board());
+		return "/insert_board";
+	}
+	
+	// 입력받은 데이터를 데이터베이스에 반영
 	@PostMapping("/insertBoard")
+	public String insertBoard(@ModelAttribute Board board) {
+		boardservice.insertBoard(board);
+		return "redirect:/list";
+	}
 	
 	@GetMapping("/")
 	public String home() {
@@ -76,24 +98,24 @@ public class Controller {
 	    return "/login";
 	}
 	
-	@GetMapping(value="/login")
+	@GetMapping("/login")
 	public String beforeLogin(Model model) {
 		return "/login";
 	}
 	
 	@Secured({"ROLE_ADMIN"})
-	@GetMapping(value="/admin")
+	@GetMapping("/admin")
 	public String admin(Model model) {
 		return "/admin";
 	}
 	   
 	@Secured({"ROLE_USER"})
-	@GetMapping(value="/user/info")
+	@GetMapping("/user/info")
 	public String userInfo(Model model) {  
 	   return "/user_info";
 	}
 	   
-	@GetMapping(value="/denied")
+	@GetMapping("/denied")
 	public String denied(Model model) {
 	   return "/denied";
 	}

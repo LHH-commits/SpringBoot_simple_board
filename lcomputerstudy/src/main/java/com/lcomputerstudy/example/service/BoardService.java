@@ -9,4 +9,7 @@ public interface BoardService {
 	
 	// 게시글 작성 기능
 	public void insertBoard(Board board);
+	
+	// 게시글 상세보기
+	public Board selectBoardBid(int bId);
 }

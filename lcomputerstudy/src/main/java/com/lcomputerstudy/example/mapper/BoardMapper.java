@@ -11,4 +11,7 @@ public interface BoardMapper {
 	
 	// MyBatis로 게시글 작성 쿼리를 매핑
 	public void insertBoard(Board board);
+	
+	// 게시글 상세보기 매핑
+	public Board selectBoardBid(int bId);
 }

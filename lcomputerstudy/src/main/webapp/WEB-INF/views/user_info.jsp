@@ -15,6 +15,10 @@
 			<sec:authorize access="isAuthenticated()">
 				<sec:authentication property="principal" var="principal"/>
 				<h2>${principal }</h2>
+				<td>아이디</td>
+				<h2>${principal.username }</h2>
+				<td>권한</td>
+				<h2>${principal.authorities }</h2>
 			</sec:authorize>
 			<a href="/">돌아가기</a>
 		</div>

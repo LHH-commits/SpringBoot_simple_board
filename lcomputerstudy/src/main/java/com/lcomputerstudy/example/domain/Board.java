@@ -2,11 +2,11 @@ package com.lcomputerstudy.example.domain;
 
 public class Board {
 
-	private int bId;
-	private String bTitle;
-	private String bContent;
-	private String bWriter;
-	private String bDateTime;
+	private int bId;			//b_id
+	private String bTitle;		//b_title
+	private String bContent;	//b_content
+	private String bWriter;		//b_writer
+	private String bDateTime;	//b_datetime
 	
 	public int getbId() {
 		return bId;

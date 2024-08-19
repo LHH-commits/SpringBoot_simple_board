@@ -1,7 +1,0 @@
-package com.lcomputerstudy.example.controller;
-
-import org.springframework.web.bind.annotation.RequestMapping;
-
-public class Controller {
-
-}
