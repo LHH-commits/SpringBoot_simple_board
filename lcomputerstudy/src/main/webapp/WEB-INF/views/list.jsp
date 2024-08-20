@@ -66,7 +66,7 @@
                 <c:forEach var="item" items="${list}">
                     <tr>
                         <td>${item.bId}</td>
-                        <td>${item.bTitle}</td>
+                        <td><a href="/detailBoard?bId=${item.bId }">${item.bTitle}</a></td>
                         <td>${item.bWriter}</td>
                         <td>${item.bDateTime}</td>
                     </tr>

@@ -11,7 +11,7 @@
 <body>
 	<h1>게시물 작성</h1>
 	
-	<!-- 현재 로그인한 사용자의 정보를 가져오기 -->
+	<!-- 현재 로그인한 사용자의 이름(작성자)을 가져오기 -->
 	<sec:authentication property="principal" var="principal"/>
 	<c:set var="uName" value="${principal.uName }"/>
 	

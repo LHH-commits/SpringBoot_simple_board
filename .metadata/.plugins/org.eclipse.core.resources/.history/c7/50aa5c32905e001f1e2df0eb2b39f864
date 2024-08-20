@@ -1,0 +1,18 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>게시물 조회</title>
+</head>
+<body>
+	<div>
+        <p><strong>제목:</strong> ${board.bTitle}</p>
+        <p><strong>작성자:</strong> ${board.bWriter}</p>
+        <p><strong>작성 시각:</strong> ${board.bDateTime}</p>
+        <p><strong>내용:</strong> ${board.bContent}</p>
+    </div>
+    <a href="/list">목록으로 돌아가기</a>
+</body>
+</html>

@@ -24,4 +24,9 @@ public class BoardServiceImpl implements BoardService {
 	public Board selectBoardBid(int bId) {
 		return boardmapper.selectBoardBid(bId);
 	}
+	
+	@Override
+	public Board deleteBoard(int bId) {
+		return boardmapper.deleteBoard(bId);
+	}
 }
