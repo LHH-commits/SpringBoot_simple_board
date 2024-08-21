@@ -26,6 +26,7 @@
 	</insert>
 	
 	<!-- 게시물의 b_id를 기준으로 선택하여 상세보기 -->
+	<!-- 게시물의 b_id를 기준으로 게시물의 정보를 가져오기때문에 수정시에도 정보를 가져오기위해 사용 -->
 	<select id="selectBoardBid" parameterType="Integer" resultType="Board">
 		SELECT		b_id as bId,
 					b_title as bTitle,
@@ -38,9 +39,23 @@
 	</select>
 	
 	<!-- 게시물 삭제 -->
-	<delete id="deleteBoard" parameterType="Board">
+	<delete id="deleteBoard" parameterType="Integer">
 		DELETE FROM	lc_board
 		WHERE		1=1
 		AND			b_id = #{bId}
 	</delete>
+	
+	<!-- 게시물 수정 -->
+	<!-- 수정할 게시글을 선택하는 것은 기존에 selectBoardBid를 재사용하기 때문에 다시 만들필요는 없다 -->
+	<!-- 수정된 내용을 반영 -->
+	<update id="updateBoard" parameterType="Board">
+		UPDATE	 	lc_board 
+		SET			b_id = #{bId}
+					b_title=#{bTitle},
+					b_content=#{bContent},
+					b_datetime=#{bDateTime}
+		WHERE		1=1
+		AND			b_id = #{bId}
+	</update>
+	
 </mapper>

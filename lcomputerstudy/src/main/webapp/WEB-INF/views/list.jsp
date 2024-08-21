@@ -52,7 +52,6 @@
 <body>
     <div class="container">
         <h1>게시물 목록</h1>
-        <a href="/insertBoard" class="button">새 게시물 작성하기</a>
         <table>
             <thead>
                 <tr>
@@ -73,6 +72,7 @@
                 </c:forEach>
             </tbody>
         </table>
+        <a href="/insertBoard" class="button">새 게시물 작성하기</a>
     </div>
 </body>
 </html>

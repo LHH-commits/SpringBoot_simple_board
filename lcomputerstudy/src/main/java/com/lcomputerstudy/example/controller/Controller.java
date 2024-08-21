@@ -45,21 +45,33 @@ public class Controller {
 		return "/detail_board";
 	}
 	
-	@GetMapping("/deleteBoard")
-	public String deleteBoardresult() {
-		return "/delete_board";
-	}
-	
 	@PostMapping("/deleteBoard")
 	public String deleteBoard(@RequestParam("bId") int bId) {
 		boardservice.deleteBoard(bId);
 		return "redirect:/list";
 	}
 	
+	// 게시물 내용을 가져와서 수정하기페이지로 연결
+	@GetMapping("/editBoard")
+	public String editBoard(@RequestParam("bId") int bId, Model model) {
+		Board board = boardservice.selectBoardBid(bId);
+		model.addAttribute("board", board);
+		return "/edit_board";
+	}
+	
+	// 게시물 수정한 내용들을 데이터베이스에 반영시키고 업데이트
+	@PostMapping("/updateBoard")
+	public String updateBoard(@ModelAttribute Board board) {
+		boardservice.updateBoard(board);
+		return "redirect:/list";
+	}
+	
 	// 사용자가 입력할 게시물 폼
 	@GetMapping("/insertBoard")
-	public String insertBoardform(Model model) {
-		model.addAttribute("board", new Board());
+	public String insertBoardform() {
+		//굳이 model 작업으로 새 board를 만들지 않아도 내부적으로 반영되기때문에
+		//그냥 작성할 폼만 띄워주는 Get메서드임
+		//model.addAttribute("board", new Board());
 		return "/insert_board";
 	}
 	

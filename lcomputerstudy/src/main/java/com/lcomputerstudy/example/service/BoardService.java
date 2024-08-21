@@ -20,5 +20,8 @@ public interface BoardService {
 	public Board selectBoardBid(int bId);
 	
 	// 게시글 삭제
-	public Board deleteBoard(int bId);
+	public void deleteBoard(int bId);
+	
+	// 게시글 수정
+	public void updateBoard(Board board);
 }

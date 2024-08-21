@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lcomputerstudy.example.mapper.BoardMapper">
+	
+	<!-- 게시물 목록 -->
+	<select id="selectBoardList" resultType="Board">
+	    SELECT		b_id as bId,
+				    b_title as bTitle,
+				    b_content as bContent,
+				    b_writer as bWriter,
+				    b_datetime as bDateTime	
+	    FROM        lc_board
+	</select>
+	
+	<!-- 게시물 작성(추가) -->
+	<insert id="insertBoard" parameterType="Board">
+		INSERT INTO	lc_board (
+			b_title,
+			b_content,
+			b_writer
+		) VALUES (
+			#{bTitle},
+			#{bContent},
+			#{bWriter}
+		)
+	</insert>
+	
+	<!-- 게시물의 b_id를 기준으로 선택하여 상세보기 -->
+	<select id="selectBoardBid" parameterType="Integer" resultType="Board">
+		SELECT		b_id as bId,
+					b_title as bTitle,
+					b_content as bContent,
+					b_writer as bWriter,
+					b_datetime as bDateTime
+		FROM		lc_board
+		WHERE		1=1
+		AND			b_id = #{bId}
+	</select>
+	
+	<!-- 게시물 삭제 -->
+	<delete id="deleteBoard" parameterType="Integer">
+		DELETE FROM	lc_board
+		WHERE		1=1
+		AND			b_id = #{bId}
+	</delete>
+	
+	<!-- 게시물 수정 -->
+	<select id="editBoard" parameterType="Board" resultType="Board">
+		SELECT		*
+		FROM		lc_board
+		WHERE		1=1
+		AND			b_id = #{bId}
+	</select>
+</mapper>
