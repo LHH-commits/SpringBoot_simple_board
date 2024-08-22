@@ -26,8 +26,10 @@ public class SecurityConfig{
         http
         	// 인증과 권한
             .authorizeHttpRequests((req) -> req
-                .requestMatchers("/user/**").authenticated()
-                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers("/user/**").authenticated() // 인증된 사용자는 접근가능
+                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN") // ADMIN만 접근가능
+                // USER권한이나 ADMIN권한이 있을때 접근가능
+                .requestMatchers("/insertBoard").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .anyRequest().permitAll()
             )
             // 폼 로그인 설정

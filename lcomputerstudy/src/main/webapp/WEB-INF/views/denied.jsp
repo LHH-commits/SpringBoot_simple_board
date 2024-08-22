@@ -7,7 +7,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<h1>관리자 권한 없음</h1>
+	<h1>권한 없음</h1>
    <a href="/">돌아가기</a>
 </body>
 </html>
