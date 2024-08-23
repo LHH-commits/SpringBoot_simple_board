@@ -10,9 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
@@ -47,15 +49,54 @@ public class Controller {
 	
 	@PostMapping("/deleteBoard")
 	public String deleteBoard(@RequestParam("bId") int bId) {
-		boardservice.deleteBoard(bId);
+		
+		// 현재 인증된 사용자 정보 가져오기
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		// 현재 사용자 권한 확인 (admin 권한 여부 확인)
+		boolean isAdmin = authentication.getAuthorities().stream()
+										.anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
+		
+		// 현재 사용자의 u_id 가져오기
+		String currentUserId = authentication.getName();
+		
+		// 게시물 정보 가져오기
+		Board board = boardservice.selectBoardBid(bId);
+		
+		// 확인용 코드
+		System.out.println("Board username: " + board.getUsername());
+		System.out.println("Current user ID: " + currentUserId);
+		
+		// 게시물의 작성자 u_id와 현재 로그인한 사용자의 u_id를 비교
+		if (board != null) {
+			if(isAdmin || currentUserId.equals(board.getUsername())) {
+				boardservice.deleteBoard(bId);
+			} else {
+				return "redirect:/denied"; // 권한이 없는 경우 접근 거부 페이지로 리다이렉트
+			}
+		} 
 		return "redirect:/list";
 	}
 	
 	// 게시물 내용을 가져와서 수정하기페이지로 연결
 	@GetMapping("/editBoard")
 	public String editBoard(@RequestParam("bId") int bId, Model model) {
+		// 현재 인증된 사용자 정보 가져오기
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		// 현재 사용자의 u_id 가져오기
+		String currentUserId = authentication.getName();
+		
 		Board board = boardservice.selectBoardBid(bId);
-		model.addAttribute("board", board);
+		
+		// 게시물의 작성자 u_id와 현재 로그인한 사용자의 u_id를 비교
+		if (board != null) {
+			if(currentUserId.equals(board.getUsername())) {
+				model.addAttribute("board", board);
+			} else {
+				return "/denied";
+			}
+		}
 		return "/edit_board";
 	}
 	

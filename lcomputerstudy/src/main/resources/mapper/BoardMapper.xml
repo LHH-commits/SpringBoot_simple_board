@@ -8,7 +8,8 @@
 				    b_title as bTitle,
 				    b_content as bContent,
 				    b_writer as bWriter,
-				    b_datetime as bDateTime	
+				    b_datetime as bDateTime,
+				    u_id as username
 	    FROM        lc_board
 	</select>
 	
@@ -17,11 +18,13 @@
 		INSERT INTO	lc_board (
 			b_title,
 			b_content,
-			b_writer
+			b_writer,
+			u_id
 		) VALUES (
 			#{bTitle},
 			#{bContent},
-			#{bWriter}
+			#{bWriter},
+			#{username}
 		)
 	</insert>
 	
@@ -32,7 +35,8 @@
 					b_title as bTitle,
 					b_content as bContent,
 					b_writer as bWriter,
-					b_datetime as bDateTime
+					b_datetime as bDateTime,
+					u_id as username
 		FROM		lc_board
 		WHERE		1=1
 		AND			b_id = #{bId}

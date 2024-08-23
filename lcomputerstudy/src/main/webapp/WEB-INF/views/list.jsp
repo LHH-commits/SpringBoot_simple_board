@@ -47,11 +47,31 @@
         .button:hover {
             background-color: #0056b3;
         }
+        .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+   		}
+    	.logout-button {
+        padding: 10px 15px;
+        text-decoration: none;
+        color: #fff;
+        background-color: #dc3545;
+        border-radius: 5px;
+        font-size: 16px;
+   		}
+    	.logout-button:hover {
+        background-color: #c82333;
+   		}
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>게시물 목록</h1>
+    	<div class="header">
+    		<h1>게시물 목록</h1>
+    		<a href="/logout" class="logout-button">로그아웃</a>	
+    	</div>
         <table>
             <thead>
                 <tr>

@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>권한 없음</title>
 </head>
 <body>
 	<h1>권한 없음</h1>

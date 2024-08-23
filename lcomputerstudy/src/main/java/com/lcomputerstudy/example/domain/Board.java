@@ -1,13 +1,35 @@
 package com.lcomputerstudy.example.domain;
 
-public class Board {
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+public class Board implements UserDetails {
+	
+	private static final long serialVersionUID = 1L;
 
 	private int bId;			//b_id
 	private String bTitle;		//b_title
 	private String bContent;	//b_content
 	private String bWriter;		//b_writer
 	private String bDateTime;	//b_datetime
+	private String username;	//u_id
+	private String password;
 	
+	private Collection<? extends GrantedAuthority> authorities;
+	
+	@Override
+	public String getUsername() {
+		// TODO Auto-generated method stub
+		return username;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
 	public int getbId() {
 		return bId;
 	}
@@ -37,5 +59,21 @@ public class Board {
 	}
 	public void setbDateTime(String bDateTime) {
 		this.bDateTime = bDateTime;
+	}
+	
+	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
+		this.authorities = authorities;
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		// TODO Auto-generated method stub
+		return authorities;
+	}
+	
+	@Override
+	public String getPassword() {
+		// TODO Auto-generated method stub
+		return password;
 	}
 }

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -40,8 +41,27 @@
         <p><strong>작성일시:</strong> ${board.bDateTime}</p>
         <p><strong>내용:</strong> ${board.bContent}</p>
     </div>
-    <button type="button" onclick="location.href='/editBoard?bId=${board.bId}'">수정</button>
-    <button onclick="confirmDelete(${board.bId})">삭제</button><br>
+    <sec:authentication property="principal" var="principal"/>
+    <!-- 수정 버튼 권한 -->
+    <!-- 현재 로그인한 u_id가 작성자 u_id가 같을때 수정버튼이 뜬다 -->
+    <sec:authorize access="isAuthenticated()">
+    	<c:if test="${board.username == principal.username}">
+    		<button type="button" onclick="location.href='/editBoard?bId=${board.bId}'">수정</button>
+    	</c:if>
+    </sec:authorize>
+  	<!-- 삭제 버튼 권한 -->
+    <!-- 관리자 권한을 가지고 있다면 삭제버튼이 모든 게시물에 뜬다 -->
+    <sec:authorize access="hasRole('ROLE_ADMIN')">
+    	<button type="button" onclick="confirmDelete(${board.bId})">삭제</button>
+    </sec:authorize>
+    <!-- 관리자 권한을 가지고 있지 않다면 현재 로그인한 u_id가 작성자 u_id가 같을때 버튼이 뜬다 -->
+    <sec:authorize access="!hasRole('ROLE_ADMIN')">
+        <c:if test="${board.username == principal.username}">
+            <button type="button" onclick="confirmDelete(${board.bId})">삭제</button>
+        </c:if>
+    </sec:authorize>
+
+    <br>
     <a href="/list">목록으로 돌아가기</a>
 </body>
 </html>
