@@ -13,7 +13,7 @@
 				    u_id as username
 	    FROM        lc_board
 	    ORDER BY	b_id DESC
-	    LIMIT		#{pageNum}, #{perPage}
+	    LIMIT		#{boardsPerPage}, #{perPage}
 	</select>
 	
 	<!-- 페이징 적용을 위한 게시물 카운트 -->

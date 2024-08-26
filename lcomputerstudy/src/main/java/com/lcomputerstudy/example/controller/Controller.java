@@ -48,9 +48,10 @@ public class Controller {
 	
 	//게시물 제목 클릭시 상세보기
 	@GetMapping("/detailBoard")
-	public String detailBoard(@RequestParam("bId") int bId, Model model) {
+	public String detailBoard(@RequestParam("bId") int bId, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
 		Board boardID = boardservice.selectBoardBid(bId);
 		model.addAttribute("board", boardID);
+		model.addAttribute("page", page);
 		return "/detail_board";
 	}
 	

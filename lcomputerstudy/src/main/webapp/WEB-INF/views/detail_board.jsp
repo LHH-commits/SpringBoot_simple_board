@@ -47,7 +47,7 @@
     <!-- 현재 로그인한 u_id가 작성자 u_id가 같을때 수정버튼이 뜬다 -->
     <sec:authorize access="isAuthenticated()">
     	<c:if test="${board.username == principal.username}">
-    		<button type="button" onclick="location.href='/editBoard?bId=${board.bId}'">수정</button>
+    		<button type="button" onclick="location.href='/editBoard?bId=${board.bId}&page=${page}'">수정</button>
     	</c:if>
     </sec:authorize>
   	<!-- 삭제 버튼 권한 -->
@@ -63,6 +63,6 @@
     </sec:authorize>
 
     <br>
-    <a href="/list">목록으로 돌아가기</a>
+    <a href="/list?page=${page}">목록으로 돌아가기</a>
 </body>
 </html>
