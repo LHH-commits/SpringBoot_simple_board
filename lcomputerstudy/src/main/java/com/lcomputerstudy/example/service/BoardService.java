@@ -2,6 +2,7 @@ package com.lcomputerstudy.example.service;
 
 import java.util.List;
 import com.lcomputerstudy.example.domain.Board;
+import com.lcomputerstudy.example.domain.Pagination;
 
 public interface BoardService {
 	// 요청시 필요한 변수에 따라서 쓰면 된다
@@ -11,7 +12,10 @@ public interface BoardService {
 	// int bId를 사용하는 것이 편하다
 	
 	// 게시글 목록 불러오기
-	public List<Board> selectBoardList();
+	public List<Board> selectBoardList(Pagination pagination);
+	
+	// 게시글 전체 수(페이지네이션 계산할때 사용된다)
+	public int countBoard();
 	
 	// 게시글 작성 기능
 	public void insertBoard(Board board);
@@ -24,4 +28,5 @@ public interface BoardService {
 	
 	// 게시글 수정
 	public void updateBoard(Board board);
+	
 }

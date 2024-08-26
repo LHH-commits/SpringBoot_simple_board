@@ -14,21 +14,24 @@ public class Board implements UserDetails {
 	private String bContent;	//b_content
 	private String bWriter;		//b_writer
 	private String bDateTime;	//b_datetime
+	private int bViews;			//b_views
 	private String username;	//u_id
-	private String password;
+	private String password;	//u_password - 근데 이건 UserDetails를 구현하기 위한거라서 여기선 의미없음
 	
 	private Collection<? extends GrantedAuthority> authorities;
 	
-	@Override
-	public String getUsername() {
-		// TODO Auto-generated method stub
-		return username;
-	}
+	
 	public void setPassword(String password) {
 		this.password = password;
 	}
 	public void setUsername(String username) {
 		this.username = username;
+	}
+	public int getbViews() {
+		return bViews;
+	}
+	public void setbViews(int bViews) {
+		this.bViews = bViews;
 	}
 	public int getbId() {
 		return bId;
@@ -63,6 +66,12 @@ public class Board implements UserDetails {
 	
 	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
 		this.authorities = authorities;
+	}
+	
+	@Override
+	public String getUsername() {
+		// TODO Auto-generated method stub
+		return username;
 	}
 
 	@Override

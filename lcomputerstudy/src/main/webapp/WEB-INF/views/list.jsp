@@ -79,6 +79,7 @@
                     <th>제목</th>
                     <th>작성자</th>
                     <th>작성일시</th>
+                    <th>조회수</th>
                 </tr>
             </thead>
             <tbody>
@@ -88,10 +89,22 @@
                         <td><a href="/detailBoard?bId=${item.bId }">${item.bTitle}</a></td>
                         <td>${item.bWriter}</td>
                         <td>${item.bDateTime}</td>
+                        <td>${item.bViews}</td>
                     </tr>
                 </c:forEach>
             </tbody>
         </table>
+        <div>
+        	<c:if test="${pagination.prevPage > 0}">
+        		<a href="/list?page=${pagintaion.prevPage}">이전</a>
+        	</c:if>
+        	<c:forEach var="i" begin="${pagination.startPage }" end="${pagination.endPage }">
+        		<a href="/list?page=${i}">${i}</a>
+        	</c:forEach>
+        	<c:if test="${pagination.nextPage <= pagination.lastPage}">
+        		<a href="/list?page=${pagination.nextPage }">다음</a>
+        	</c:if>
+        </div>
         <a href="/insertBoard" class="button">새 게시물 작성하기</a>
     </div>
 </body>

@@ -40,6 +40,7 @@
         <p><strong>작성자:</strong> ${board.bWriter}</p>
         <p><strong>작성일시:</strong> ${board.bDateTime}</p>
         <p><strong>내용:</strong> ${board.bContent}</p>
+        <p><strong>조회수:</strong> ${board.bViews}</p>
     </div>
     <sec:authentication property="principal" var="principal"/>
     <!-- 수정 버튼 권한 -->

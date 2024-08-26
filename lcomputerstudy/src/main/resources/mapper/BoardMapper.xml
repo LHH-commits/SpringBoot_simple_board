@@ -3,14 +3,23 @@
 <mapper namespace="com.lcomputerstudy.example.mapper.BoardMapper">
 	
 	<!-- 게시물 목록 -->
-	<select id="selectBoardList" resultType="Board">
+	<select id="selectBoardList" parameterType="Pagination" resultType="Board">
 	    SELECT		b_id as bId,
 				    b_title as bTitle,
 				    b_content as bContent,
 				    b_writer as bWriter,
 				    b_datetime as bDateTime,
+				    b_views as bViews,
 				    u_id as username
 	    FROM        lc_board
+	    ORDER BY	b_id DESC
+	    LIMIT		#{pageNum}, #{perPage}
+	</select>
+	
+	<!-- 페이징 적용을 위한 게시물 카운트 -->
+	<select id="countBoard" resultType="Integer">
+		SELECT	COUNT(*) 
+		FROM 	lc_board
 	</select>
 	
 	<!-- 게시물 작성(추가) -->
@@ -36,11 +45,19 @@
 					b_content as bContent,
 					b_writer as bWriter,
 					b_datetime as bDateTime,
+					b_views as bViews,
 					u_id as username
 		FROM		lc_board
 		WHERE		1=1
 		AND			b_id = #{bId}
 	</select>
+	
+	<!-- 게시물 조회수 증가 -->
+	<update id="countViews" parameterType="Integer">
+		UPDATE		lc_board
+		SET			b_views = b_views+1
+		WHERE		b_id = #{bId}
+	</update>
 	
 	<!-- 게시물 삭제 -->
 	<delete id="deleteBoard" parameterType="Integer">

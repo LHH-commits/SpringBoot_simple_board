@@ -26,16 +26,16 @@
 <body>
 	<h1>게시물 수정</h1>
 	<!-- 현재 수정했던 시간 실시간 반영하기 -->
-	<form action="/updateBoard?bId=${board.bId }" method="post" onsubmit="return confirmUpdate()">
+	<form action="/updateBoard?bId=${board.bId}" method="post" onsubmit="return confirmUpdate()">
 	<input type="hidden" name="bDateTime" value="${bDateTime}">
         <table>
             <tr>
                 <td>제목:</td>
-                <td><input type="text" name="bTitle" value="${board.bTitle }" required/></td>
+                <td><input type="text" name="bTitle" value="${board.bTitle}" required/></td>
             </tr>
             <tr>
                 <td>내용:</td>
-                <td><textarea name="bContent" required>${board.bContent }</textarea></td>
+                <td><textarea name="bContent" required>${board.bContent}</textarea></td>
             </tr>
         </table>
         <button type="submit">게시물 수정</button>

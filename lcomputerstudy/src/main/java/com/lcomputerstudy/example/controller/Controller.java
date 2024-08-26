@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.lcomputerstudy.example.domain.Board;
 import com.lcomputerstudy.example.domain.User;
+import com.lcomputerstudy.example.domain.Pagination;
 import com.lcomputerstudy.example.service.BoardService;
 import com.lcomputerstudy.example.service.UserService;
 import org.slf4j.Logger;
@@ -33,9 +34,15 @@ public class Controller {
 	
 	// Model은 컨트롤러와 뷰 사이의 데이터를 전달하는 역할을 수행
 	@GetMapping("/list")
-	public String list(Model model) {
-		List<Board> list = boardservice.selectBoardList();
+	public String list(Model model, @RequestParam(value="page", required=false, defaultValue="1") int page) {
+		Pagination pagination = new Pagination();
+		pagination.setPage(page);
+		pagination.setCount(boardservice.countBoard());
+		pagination.build();
+		
+		List<Board> list = boardservice.selectBoardList(pagination);
 		model.addAttribute("list", list);
+		model.addAttribute("pagination", pagination);
 		return "/list";
 	}
 	
@@ -79,6 +86,7 @@ public class Controller {
 	}
 	
 	// 게시물 내용을 가져와서 수정하기페이지로 연결
+	// 게시물의 u_id와 로그인 u_id가 같다면 수정할 수 있게 권한 부여
 	@GetMapping("/editBoard")
 	public String editBoard(@RequestParam("bId") int bId, Model model) {
 		// 현재 인증된 사용자 정보 가져오기

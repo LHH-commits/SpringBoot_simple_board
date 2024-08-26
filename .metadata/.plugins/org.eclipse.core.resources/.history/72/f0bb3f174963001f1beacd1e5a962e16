@@ -1,0 +1,15 @@
+package com.lcomputerstudy.example.domain;
+
+public class Pagination {
+
+	int count;
+	int page;
+	int pageNum;
+	int startPage;
+	int endPage;
+	int lastPage;
+	int prevPage;
+	int nextPage;
+	public static final int pageUnit=5;
+	public static final int perPage=5;
+}
