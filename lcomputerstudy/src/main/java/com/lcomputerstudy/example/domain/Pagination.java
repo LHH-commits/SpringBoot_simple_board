@@ -13,6 +13,9 @@ public class Pagination {
 	public static final int pageUnit=5;	//화면에 보여질 페이지번호의 최대 갯수
 	public static final int perPage=5;	//한 페이지에서 보여줄 게시글의 수
 	
+	String searchOption;
+	String searchKeyword;
+
 	public Pagination() {
 		
 	}
@@ -27,6 +30,21 @@ public class Pagination {
 		nextPage = (startPage+pageUnit); // 다음 페이지 그룹의 시작 페이지를 계산 ex) 현재 startPage=6, pageUnit=5라면 nextPage=11
 	}
 
+	public String getSearchOption() {
+		return searchOption;
+	}
+
+	public void setSearchOption(String searchOption) {
+		this.searchOption = searchOption;
+	}
+
+	public String getSearchKeyword() {
+		return searchKeyword;
+	}
+
+	public void setSearchKeyword(String searchKeyword) {
+		this.searchKeyword = searchKeyword;
+	}
 	public int getCount() {
 		return count;
 	}

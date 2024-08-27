@@ -1,0 +1,32 @@
+package com.lcomputerstudy.example.mapper;
+
+import java.util.List;
+import org.apache.ibatis.annotations.Mapper;
+import com.lcomputerstudy.example.domain.Board;
+import com.lcomputerstudy.example.domain.Pagination;
+
+// xml을 통해 데이터베이스 쿼리와 매핑
+@Mapper
+public interface BoardMapper {
+	// 게시글목록을 데이터베이스에서 조회
+	public List<Board> selectBoardList(Pagination pagination);
+	
+	// 전체 게시글 수를 카운트
+	public int countBoard();
+	
+	// MyBatis로 게시글 작성 쿼리를 매핑
+	public void insertBoard(Board board);
+	
+	// 게시글 상세보기 매핑
+	public Board selectBoardBid(int bId);
+	
+	public void countViews(int bId);
+	
+	// 게시글 삭제 매핑
+	// 반환 값이 굳이 필요없고 해당 bId의 게시물을 지우기만하면 되므로 void를 사용
+	public void deleteBoard(int bId);
+	
+	// 게시글 수정을 위한 매핑
+	// 게시글 업데이트
+	public void updateBoard(Board board);
+}

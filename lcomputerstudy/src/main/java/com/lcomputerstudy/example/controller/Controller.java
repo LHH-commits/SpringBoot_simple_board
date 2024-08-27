@@ -1,7 +1,10 @@
 package com.lcomputerstudy.example.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import com.lcomputerstudy.example.domain.Board;
 import com.lcomputerstudy.example.domain.User;
 import com.lcomputerstudy.example.domain.Pagination;
@@ -34,16 +37,36 @@ public class Controller {
 	
 	// Model은 컨트롤러와 뷰 사이의 데이터를 전달하는 역할을 수행
 	@GetMapping("/list")
-	public String list(Model model, @RequestParam(value="page", required=false, defaultValue="1") int page) {
-		Pagination pagination = new Pagination();
-		pagination.setPage(page);
-		pagination.setCount(boardservice.countBoard());
-		pagination.build();
+	public String list(Model model,
+						@RequestParam(value="page", required=false, defaultValue="1") int page,
+						@RequestParam(value="searchOption", required=false, defaultValue="") String searchOption,
+						@RequestParam(value="searchKeyword", required=false, defaultValue="") String searchKeyword) {
 		
-		List<Board> list = boardservice.selectBoardList(pagination);
-		model.addAttribute("list", list);
-		model.addAttribute("pagination", pagination);
-		return "/list";
+		Pagination pagination = new Pagination();
+	    pagination.setPage(page);
+	    pagination.setSearchOption(searchOption);
+	    pagination.setSearchKeyword(searchKeyword);
+	    
+	    List<Board> list;
+	    if ((searchOption == null || searchOption.isEmpty()) && 
+	    	(searchKeyword == null || searchKeyword.isEmpty())) {
+	    	pagination.setCount(boardservice.countBoard());
+	    	list = boardservice.selectBoardList(pagination);
+	    	model.addAttribute("list", list);
+	    } else {
+	    	pagination.setCount(boardservice.countSearchBoard(pagination));
+	        list = boardservice.searchBoard(pagination);
+	        model.addAttribute("list", list);
+	    }
+	    pagination.build();
+	    System.out.println("searchOption: " + searchOption.toString());
+	    System.out.println("searchKeyword: " + searchKeyword.toString());
+	    
+	    model.addAttribute("pagination", pagination);
+	    model.addAttribute("searchOption", searchOption);
+	    model.addAttribute("searchKeyword", searchKeyword);
+	    
+	    return "/list";
 	}
 	
 	//게시물 제목 클릭시 상세보기
