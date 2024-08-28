@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <!DOCTYPE html>
 <html>
@@ -48,25 +48,25 @@
             background-color: #0056b3;
         }
         .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
+	        display: flex;
+	        justify-content: space-between;
+	        align-items: center;
+	        margin-bottom: 20px;
    		}
     	.logout-button {
-        padding: 10px 15px;
-        text-decoration: none;
-        color: #fff;
-        background-color: #dc3545;
-        border-radius: 5px;
-        font-size: 16px;
+	        padding: 10px 15px;
+	        text-decoration: none;
+	        color: #fff;
+	        background-color: #dc3545;
+	        border-radius: 5px;
+	        font-size: 16px;
    		}
     	.logout-button:hover {
-        background-color: #c82333;
+        	background-color: #c82333;
    		}
    		.pagination {
-        text-align: center;
-        margin: 20px 0;
+	        text-align: center;
+	        margin: 20px 0;
 	    }
 	    .pagination a {
 	        color: #007bff;
@@ -87,11 +87,18 @@
 	        cursor: not-allowed;
 	    }
     </style>
+    <script>
+        function goToList() {
+            window.location.href = "/list"; // 전체 리스트로 이동
+        }
+    </script>
 </head>
 <body>
     <div class="container">
     	<div class="header">
-    		<h1>게시물 목록</h1>
+    		<h1>
+    			<span onclick="goToList()" style="cursor: pointer;">게시물 목록</span>
+    		</h1>
     		<a href="/logout" class="logout-button">로그아웃</a>	
     	</div>
 		<form action="/list" method="get">
@@ -117,7 +124,7 @@
                 <c:forEach var="item" items="${list}">
                     <tr>
                         <td>${item.bId}</td>
-                        <td><a href="/detailBoard?bId=${item.bId}&page=${pagination.page}">${item.bTitle}</a></td>
+                        <td><a href="/detailBoard?bId=${item.bId}&page=${pagination.page}&searchOption=${searchOption}&searchKeyword=${searchKeyword}">${item.bTitle}</a></td>
                         <td>${item.bWriter}</td>
                         <td>${item.bDateTime}</td>
                         <td>${item.bViews}</td>
@@ -130,7 +137,8 @@
 		        <a href="/list?page=${pagination.prevPage}&searchOption=${pagination.searchOption}&searchKeyword=${pagination.searchKeyword}">이전</a>
 		    </c:if>
 		    <c:forEach var="i" begin="${pagination.startPage}" end="${pagination.endPage}">
-		        <a href="/list?page=${i}&searchOption=${pagination.searchOption}&searchKeyword=${pagination.searchKeyword}">${i}</a>
+		        <a href="/list?page=${i}&searchOption=${pagination.searchOption}&searchKeyword=${pagination.searchKeyword}"
+		        	class="${i == pagination.page ? 'active' : ''}">${i}</a>
 		    </c:forEach>
 		    <c:if test="${pagination.nextPage <= pagination.lastPage}">
 		        <a href="/list?page=${pagination.nextPage}&searchOption=${pagination.searchOption}&searchKeyword=${pagination.searchKeyword}">다음</a>

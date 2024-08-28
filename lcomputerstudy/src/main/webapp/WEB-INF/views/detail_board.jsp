@@ -63,6 +63,13 @@
     </sec:authorize>
 
     <br>
-    <a href="/list?page=${page}">목록으로 돌아가기</a>
+    <c:choose>
+	    <c:when test="${empty searchOption && empty searchKeyword}">
+	    	<a href="/list?page=${page}">목록으로 돌아가기</a>
+	    </c:when>
+	    <c:otherwise>
+	    	<a href="/list?page=${page}&searchOption=${searchOption}&searchKeyword=${searchKeyword}">목록으로 돌아가기</a>
+	    </c:otherwise>
+	</c:choose>
 </body>
 </html>

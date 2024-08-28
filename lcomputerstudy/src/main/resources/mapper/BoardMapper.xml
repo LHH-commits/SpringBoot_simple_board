@@ -2,35 +2,45 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lcomputerstudy.example.mapper.BoardMapper">
 	
+	<resultMap id="BoardMap" type="Board">
+		<id property="bId" column="b_id"/>
+		<result property="bTitle" column="b_title"/>
+		<result property="bContent" column="b_content"/>
+		<result property="bWriter" column="b_writer"/>
+		<result property="bDateTime" column="b_datetime"/>
+		<result property="bViews" column="b_views"/>
+		<result property="username" column="u_id"/>
+	</resultMap>
+	
 	<!-- 게시물 목록 -->
-	<select id="selectBoardList" parameterType="Pagination" resultType="Board">
-	    SELECT		b_id as bId,
-				    b_title as bTitle,
-				    b_content as bContent,
-				    b_writer as bWriter,
-				    b_datetime as bDateTime,
-				    b_views as bViews,
-				    u_id as username
+	<select id="selectBoardList" parameterType="Pagination" resultMap="BoardMap">
+	    SELECT		b_id,
+				    b_title,
+				    b_content,
+				    b_writer,
+				    b_datetime,
+				    b_views,
+				    u_id
 	    FROM        lc_board
-	    ORDER BY	b_id DESC
+	    ORDER BY	b_datetime DESC
 	    LIMIT		#{boardsPerPage}, #{perPage}
 	</select>
 	
 	<!-- 페이징 적용을 위한 게시물 카운트 -->
-	<select id="countBoard" resultType="Integer">
+	<select id="countBoard" resultType="int">
 		SELECT	COUNT(*) 
 		FROM 	lc_board
 	</select>
 	
 	<!-- 검색을 적용시켰을때 나오는 리스트 -->
-	<select id="searchBoard" parameterType="Pagination" resultType="Board">
-	    SELECT		b_id as bId,
-				    b_title as bTitle,
-				    b_content as bContent,
-				    b_writer as bWriter,
-				    b_datetime as bDateTime,
-				    b_views as bViews,
-				    u_id as username
+	<select id="searchBoard" parameterType="Pagination" resultMap="BoardMap">
+	    SELECT		b_id,
+				    b_title,
+				    b_content,
+				    b_writer,
+				    b_datetime,
+				    b_views,
+				    u_id
 	    FROM        lc_board
 	    WHERE		1=1
 	    <if test="searchOption == 'title'">
@@ -43,12 +53,12 @@
         AND (b_title LIKE CONCAT('%', #{searchKeyword}, '%') 
             OR b_content LIKE CONCAT('%', #{searchKeyword}, '%'))
     	</if>
-	    ORDER BY	b_id DESC
+	    ORDER BY	b_datetime DESC
 	    LIMIT		#{boardsPerPage}, #{perPage}
 	</select>
 	
 	<!-- 검색을 위한 게시물 카운트 -->
-	<select id="countSearchBoard" parameterType="Pagination" resultType="Integer">
+	<select id="countSearchBoard" parameterType="Pagination" resultType="int">
 	    SELECT COUNT(*)
 	    FROM lc_board
 	    WHERE 1=1
@@ -81,14 +91,14 @@
 	
 	<!-- 게시물의 b_id를 기준으로 선택하여 상세보기 -->
 	<!-- 게시물의 b_id를 기준으로 게시물의 정보를 가져오기때문에 수정시에도 정보를 가져오기위해 사용 -->
-	<select id="selectBoardBid" parameterType="Integer" resultType="Board">
-		SELECT		b_id as bId,
-					b_title as bTitle,
-					b_content as bContent,
-					b_writer as bWriter,
-					b_datetime as bDateTime,
-					b_views as bViews,
-					u_id as username
+	<select id="selectBoardBid" parameterType="Integer" resultMap="BoardMap">
+		SELECT		b_id,
+					b_title,
+					b_content,
+					b_writer,
+					b_datetime,
+					b_views,
+					u_id
 		FROM		lc_board
 		WHERE		1=1
 		AND			b_id = #{bId}

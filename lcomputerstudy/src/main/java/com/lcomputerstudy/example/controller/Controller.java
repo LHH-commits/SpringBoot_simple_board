@@ -41,27 +41,31 @@ public class Controller {
 						@RequestParam(value="page", required=false, defaultValue="1") int page,
 						@RequestParam(value="searchOption", required=false, defaultValue="") String searchOption,
 						@RequestParam(value="searchKeyword", required=false, defaultValue="") String searchKeyword) {
-		
+		int count = 0;
 		Pagination pagination = new Pagination();
+	    
+	    if ((searchOption == null || searchOption.isEmpty()) && 
+	    	(searchKeyword == null || searchKeyword.isEmpty())) {
+	    	count = boardservice.countBoard();
+	    } else {
+	    	pagination.setSearchOption(searchOption);
+		    pagination.setSearchKeyword(searchKeyword);
+	    	count = boardservice.countSearchBoard(pagination);
+	    }
+	    
 	    pagination.setPage(page);
-	    pagination.setSearchOption(searchOption);
-	    pagination.setSearchKeyword(searchKeyword);
+	    pagination.setCount(count);
+	    pagination.build();
 	    
 	    List<Board> list;
 	    if ((searchOption == null || searchOption.isEmpty()) && 
-	    	(searchKeyword == null || searchKeyword.isEmpty())) {
-	    	pagination.setCount(boardservice.countBoard());
-	    	list = boardservice.selectBoardList(pagination);
-	    	model.addAttribute("list", list);
-	    } else {
-	    	pagination.setCount(boardservice.countSearchBoard(pagination));
-	        list = boardservice.searchBoard(pagination);
-	        model.addAttribute("list", list);
-	    }
-	    pagination.build();
-	    System.out.println("searchOption: " + searchOption.toString());
-	    System.out.println("searchKeyword: " + searchKeyword.toString());
+		    (searchKeyword == null || searchKeyword.isEmpty())) {
+		   	list = boardservice.selectBoardList(pagination);
+		   } else {
+		    list = boardservice.searchBoard(pagination);
+		}
 	    
+	    model.addAttribute("list", list);
 	    model.addAttribute("pagination", pagination);
 	    model.addAttribute("searchOption", searchOption);
 	    model.addAttribute("searchKeyword", searchKeyword);
@@ -71,10 +75,15 @@ public class Controller {
 	
 	//게시물 제목 클릭시 상세보기
 	@GetMapping("/detailBoard")
-	public String detailBoard(@RequestParam("bId") int bId, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
+	public String detailBoard(@RequestParam("bId") int bId, @RequestParam(value = "page", defaultValue = "1") int page, 
+								@RequestParam(value="searchOption", required=false, defaultValue="") String searchOption,
+								@RequestParam(value="searchKeyword", required=false, defaultValue="") String searchKeyword,	
+								Model model) {
 		Board boardID = boardservice.selectBoardBid(bId);
 		model.addAttribute("board", boardID);
 		model.addAttribute("page", page);
+		model.addAttribute("searchOption", searchOption);
+	    model.addAttribute("searchKeyword", searchKeyword);
 		return "/detail_board";
 	}
 	
