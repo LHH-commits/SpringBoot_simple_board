@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import com.lcomputerstudy.example.domain.Board;
 import com.lcomputerstudy.example.domain.Pagination;
+import com.lcomputerstudy.example.domain.SearchParam;
 
 // xml을 통해 데이터베이스 쿼리와 매핑
 @Mapper
@@ -17,10 +18,10 @@ public interface BoardMapper {
 	public int countBoard();
 	
 	// 검색조건에 따라 데이터 베이스에서 조회
-	public List<Board> searchBoard(Pagination pagination);
+	public List<Board> searchBoard(Map<String, Object> params);
 	
 	// 검색된 게시글 수를 카운트
-	public int countSearchBoard(Pagination pagination);
+	public int countSearchBoard(SearchParam searchparam);
 	
 	// MyBatis로 게시글 작성 쿼리를 매핑
 	public void insertBoard(Board board);

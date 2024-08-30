@@ -2,19 +2,16 @@ package com.lcomputerstudy.example.domain;
 
 public class Pagination {
 
-	int count;		//전체 게시글 수
-	int page;		//현재 사용자가 보고 있는 페이지 번호 (ex) 사용자가 2페이지를 보고 있다면 page=2
-	int boardsPerPage;	//현재 페이지에 해당하는 게시글의 수만큼 가지고 온다 
-	int startPage;	//화면 하단에 표시될 페이지 번호의 시작점 ex) 1, 6, 11...
-	int endPage;	//화면 하단에 표시될 페이지 번호의 마지막번호 ex) startPage=1일때 endPage=5 단, lastPage를 넘기지 않음
-	int lastPage;	//전체 게시글 수 기준으로 계산된 마지막 번호
-	int prevPage;	//이전 페이지 그룹의 마지막 페이지 ex)현재 endPage가 10이라면 prevPage는 5
-	int nextPage;	//다음 페이지 그룹의 시작 페이지 ex)현재 startPage가 1이라면 nextPage는 6
+	private int count;		//전체 게시글 수
+	private int page;		//현재 사용자가 보고 있는 페이지 번호 (ex) 사용자가 2페이지를 보고 있다면 page=2
+	private int boardsPerPage;	//현재 페이지에 해당하는 게시글의 수만큼 가지고 온다 
+	private int startPage;	//화면 하단에 표시될 페이지 번호의 시작점 ex) 1, 6, 11...
+	private int endPage;	//화면 하단에 표시될 페이지 번호의 마지막번호 ex) startPage=1일때 endPage=5 단, lastPage를 넘기지 않음
+	private int lastPage;	//전체 게시글 수 기준으로 계산된 마지막 번호
+	private int prevPage;	//이전 페이지 그룹의 마지막 페이지 ex)현재 endPage가 10이라면 prevPage는 5
+	private int nextPage;	//다음 페이지 그룹의 시작 페이지 ex)현재 startPage가 1이라면 nextPage는 6
 	public static final int pageUnit=5;	//화면에 보여질 페이지번호의 최대 갯수
 	public static final int perPage=5;	//한 페이지에서 보여줄 게시글의 수
-	
-	String searchOption;
-	String searchKeyword;
 
 	public Pagination() {
 		
@@ -29,22 +26,12 @@ public class Pagination {
 		prevPage = (endPage-pageUnit); // 이전 페이지 그룹의 마지막 페이지를 계산 ex) 현재 endPage=10, pageUnit=5라면 prevPage=5
 		nextPage = (startPage+pageUnit); // 다음 페이지 그룹의 시작 페이지를 계산 ex) 현재 startPage=6, pageUnit=5라면 nextPage=11
 	}
-
-	public String getSearchOption() {
-		return searchOption;
+	
+	
+	public static int getPerpage() {
+		return perPage;
 	}
 
-	public void setSearchOption(String searchOption) {
-		this.searchOption = searchOption;
-	}
-
-	public String getSearchKeyword() {
-		return searchKeyword;
-	}
-
-	public void setSearchKeyword(String searchKeyword) {
-		this.searchKeyword = searchKeyword;
-	}
 	public int getCount() {
 		return count;
 	}

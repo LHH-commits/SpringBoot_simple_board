@@ -103,11 +103,11 @@
     	</div>
 		<form action="/list" method="get">
 		    <select name="searchOption">
-		        <option value="title" ${pagination.searchOption == 'title' ? 'selected' : ''}>제목으로 검색</option>
-		        <option value="content" ${pagination.searchOption == 'content' ? 'selected' : ''}>내용으로 검색</option>
-		        <option value="titleContent" ${pagination.searchOption == 'titleContent' ? 'selected' : ''}>제목+내용으로 검색</option>
+		        <option value="title" ${searchparam.searchOption == 'title' ? 'selected' : ''}>제목으로 검색</option>
+		        <option value="content" ${searchparam.searchOption == 'content' ? 'selected' : ''}>내용으로 검색</option>
+		        <option value="titleContent" ${searchparam.searchOption == 'titleContent' ? 'selected' : ''}>제목+내용으로 검색</option>
 		    </select>
-		    <input type="text" name="searchKeyword" value="${pagination.searchKeyword != null ? pagination.searchKeyword : ''}" placeholder="검색어 입력">
+		    <input type="text" name="searchKeyword" value="${searchparam.searchKeyword != null ? searchparam.searchKeyword : ''}" placeholder="검색어 입력">
 		    <button type="submit">검색</button>
 		</form>
         <table>
@@ -124,7 +124,7 @@
                 <c:forEach var="item" items="${list}">
                     <tr>
                         <td>${item.bId}</td>
-                        <td><a href="/detailBoard?bId=${item.bId}&page=${pagination.page}&searchOption=${searchOption}&searchKeyword=${searchKeyword}">${item.bTitle}</a></td>
+                        <td><a href="/detailBoard?bId=${item.bId}&page=${pagination.page}&searchOption=${searchparam.searchOption}&searchKeyword=${searchparam.searchKeyword}">${item.bTitle}</a></td>
                         <td>${item.bWriter}</td>
                         <td>${item.bDateTime}</td>
                         <td>${item.bViews}</td>
@@ -134,14 +134,14 @@
         </table>
 		<div class="pagination">
 		    <c:if test="${pagination.prevPage > 0}">
-		        <a href="/list?page=${pagination.prevPage}&searchOption=${pagination.searchOption}&searchKeyword=${pagination.searchKeyword}">이전</a>
+		        <a href="/list?page=${pagination.prevPage}&searchOption=${searchparam.searchOption}&searchKeyword=${searchparam.searchKeyword}">이전</a>
 		    </c:if>
 		    <c:forEach var="i" begin="${pagination.startPage}" end="${pagination.endPage}">
-		        <a href="/list?page=${i}&searchOption=${pagination.searchOption}&searchKeyword=${pagination.searchKeyword}"
+		        <a href="/list?page=${i}&searchOption=${searchparam.searchOption}&searchKeyword=${searchparam.searchKeyword}"
 		        	class="${i == pagination.page ? 'active' : ''}">${i}</a>
 		    </c:forEach>
 		    <c:if test="${pagination.nextPage <= pagination.lastPage}">
-		        <a href="/list?page=${pagination.nextPage}&searchOption=${pagination.searchOption}&searchKeyword=${pagination.searchKeyword}">다음</a>
+		        <a href="/list?page=${pagination.nextPage}&searchOption=${searchparam.searchOption}&searchKeyword=${searchparam.searchKeyword}">다음</a>
 		    </c:if>
 		</div>
         <a href="/insertBoard" class="button">새 게시물 작성하기</a>

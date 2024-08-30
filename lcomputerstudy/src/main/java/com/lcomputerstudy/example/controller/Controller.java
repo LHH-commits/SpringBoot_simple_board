@@ -8,6 +8,7 @@ import java.util.Map;
 import com.lcomputerstudy.example.domain.Board;
 import com.lcomputerstudy.example.domain.User;
 import com.lcomputerstudy.example.domain.Pagination;
+import com.lcomputerstudy.example.domain.SearchParam;
 import com.lcomputerstudy.example.service.BoardService;
 import com.lcomputerstudy.example.service.UserService;
 import org.slf4j.Logger;
@@ -39,36 +40,38 @@ public class Controller {
 	@GetMapping("/list")
 	public String list(Model model,
 						@RequestParam(value="page", required=false, defaultValue="1") int page,
-						@RequestParam(value="searchOption", required=false, defaultValue="") String searchOption,
-						@RequestParam(value="searchKeyword", required=false, defaultValue="") String searchKeyword) {
+						@ModelAttribute SearchParam searchparam) {
 		int count = 0;
 		Pagination pagination = new Pagination();
 	    
-	    if ((searchOption == null || searchOption.isEmpty()) && 
-	    	(searchKeyword == null || searchKeyword.isEmpty())) {
+	    if ((searchparam.getSearchOption() == null || searchparam.getSearchOption().isEmpty()) && 
+	    	(searchparam.getSearchKeyword() == null || searchparam.getSearchKeyword().isEmpty())) {
 	    	count = boardservice.countBoard();
 	    } else {
-	    	pagination.setSearchOption(searchOption);
-		    pagination.setSearchKeyword(searchKeyword);
-	    	count = boardservice.countSearchBoard(pagination);
+	    	count = boardservice.countSearchBoard(searchparam);
 	    }
 	    
 	    pagination.setPage(page);
 	    pagination.setCount(count);
 	    pagination.build();
 	    
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("searchOption", searchparam.getSearchOption());
+	    params.put("searchKeyword", searchparam.getSearchKeyword());
+	    params.put("boardsPerPage", pagination.getboardsPerPage());
+	    params.put("perPage", pagination.getPerpage());
+	    
 	    List<Board> list;
-	    if ((searchOption == null || searchOption.isEmpty()) && 
-		    (searchKeyword == null || searchKeyword.isEmpty())) {
+	    if ((searchparam.getSearchOption() == null || searchparam.getSearchOption().isEmpty()) && 
+		    (searchparam.getSearchKeyword() == null || searchparam.getSearchKeyword().isEmpty())) {
 		   	list = boardservice.selectBoardList(pagination);
 		   } else {
-		    list = boardservice.searchBoard(pagination);
+		    list = boardservice.searchBoard(params);
 		}
 	    
 	    model.addAttribute("list", list);
 	    model.addAttribute("pagination", pagination);
-	    model.addAttribute("searchOption", searchOption);
-	    model.addAttribute("searchKeyword", searchKeyword);
+	    model.addAttribute("searchparam", searchparam);
 	    
 	    return "/list";
 	}
@@ -76,14 +79,12 @@ public class Controller {
 	//게시물 제목 클릭시 상세보기
 	@GetMapping("/detailBoard")
 	public String detailBoard(@RequestParam("bId") int bId, @RequestParam(value = "page", defaultValue = "1") int page, 
-								@RequestParam(value="searchOption", required=false, defaultValue="") String searchOption,
-								@RequestParam(value="searchKeyword", required=false, defaultValue="") String searchKeyword,	
+								@ModelAttribute SearchParam searchparam,
 								Model model) {
 		Board boardID = boardservice.selectBoardBid(bId);
 		model.addAttribute("board", boardID);
 		model.addAttribute("page", page);
-		model.addAttribute("searchOption", searchOption);
-	    model.addAttribute("searchKeyword", searchKeyword);
+		model.addAttribute("searchparam", searchparam);
 		return "/detail_board";
 	}
 	

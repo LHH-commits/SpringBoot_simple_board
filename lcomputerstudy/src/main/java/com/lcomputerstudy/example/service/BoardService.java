@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.lcomputerstudy.example.domain.Board;
 import com.lcomputerstudy.example.domain.Pagination;
+import com.lcomputerstudy.example.domain.SearchParam;
 
 public interface BoardService {
 	// 요청시 필요한 변수에 따라서 쓰면 된다
@@ -19,10 +20,12 @@ public interface BoardService {
 	// 게시글 전체 수(페이지네이션 계산할때 사용된다)
 	public int countBoard();
 	
-	public List<Board> searchBoard(Pagination pagination);
+	public List<Board> searchBoard(Map<String, Object> params);
+	
+	public List<Board> searchBoard(SearchParam searchparam, Pagination pagination);
 	
 	// 검색된 게시글 수를 카운트
-	public int countSearchBoard(Pagination pagination);
+	public int countSearchBoard(SearchParam searchparam);
 	
 	// 게시글 작성 기능
 	public void insertBoard(Board board);

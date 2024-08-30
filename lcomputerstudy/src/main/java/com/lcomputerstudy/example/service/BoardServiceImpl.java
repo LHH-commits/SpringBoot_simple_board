@@ -1,5 +1,6 @@
 package com.lcomputerstudy.example.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lcomputerstudy.example.domain.Board;
 import com.lcomputerstudy.example.domain.Pagination;
+import com.lcomputerstudy.example.domain.SearchParam;
 import com.lcomputerstudy.example.mapper.BoardMapper;
 
 @Service("BoardServiceImpl")
@@ -26,13 +28,24 @@ public class BoardServiceImpl implements BoardService {
 	}
 	
 	@Override
-	public List<Board> searchBoard(Pagination pagination) {
-		return boardmapper.searchBoard(pagination);
+	public List<Board> searchBoard(Map<String, Object> params) {
+	    return boardmapper.searchBoard(params);
 	}
 	
 	@Override
-	public int countSearchBoard(Pagination pagination) {
-		return boardmapper.countSearchBoard(pagination);
+	public List<Board> searchBoard(SearchParam searchparam, Pagination pagination) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("searchOption", searchparam.getSearchOption());
+		params.put("searchKeyword", searchparam.getSearchKeyword());
+		params.put("boardsPerPage", pagination.getboardsPerPage()); // Ensure this value is properly set
+	    params.put("perPage", pagination.getPerpage());
+		
+		return searchBoard(params);
+	}
+	
+	@Override
+	public int countSearchBoard(SearchParam searchparam) {
+		return boardmapper.countSearchBoard(searchparam);
 	}
 	
 	@Override
