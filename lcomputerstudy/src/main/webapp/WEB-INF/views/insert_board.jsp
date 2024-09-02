@@ -14,10 +14,8 @@
 	<!-- 현재 로그인한 사용자의 이름(작성자)을 가져오기 -->
 	<sec:authentication property="principal" var="principal"/>
 	<c:set var="uName" value="${principal.uName}"/>
-	<c:set var="username" value="${principal.username}"/>
 	
 	<form action="/insertBoard" method="post">
-	<input type="hidden" name="username" value="${username }">
 	<input type="hidden" name="bWriter" value="${uName }">
         <table>
             <tr>

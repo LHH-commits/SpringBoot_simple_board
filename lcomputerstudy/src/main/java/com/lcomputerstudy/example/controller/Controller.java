@@ -7,10 +7,12 @@ import java.util.Map;
 
 import com.lcomputerstudy.example.domain.Board;
 import com.lcomputerstudy.example.domain.User;
+import com.lcomputerstudy.example.domain.Comment;
 import com.lcomputerstudy.example.domain.Pagination;
 import com.lcomputerstudy.example.domain.SearchParam;
 import com.lcomputerstudy.example.service.BoardService;
 import com.lcomputerstudy.example.service.UserService;
+import com.lcomputerstudy.example.service.CommentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ public class Controller {
 
 	@Autowired UserService userservice;
 	@Autowired BoardService boardservice;
+	@Autowired CommentService commentservice;
 	@Autowired PasswordEncoder passwordEncoder;
 	
 	// Model은 컨트롤러와 뷰 사이의 데이터를 전달하는 역할을 수행
@@ -166,7 +169,10 @@ public class Controller {
 	// 입력받은 데이터를 데이터베이스에 반영
 	@Secured({"ROLE_USER", "ROLE_ADMIN"})
 	@PostMapping("/insertBoard")
-	public String insertBoard(@ModelAttribute Board board) {
+	public String insertBoard(@ModelAttribute Board board, Authentication authentication) {
+		String username  = authentication.getName();
+		User user = userservice.readUser(username);
+		board.setUser(user);
 		boardservice.insertBoard(board);
 		return "redirect:/list";
 	}

@@ -11,8 +11,7 @@ public class Board {
 	private String bWriter;		//b_writer
 	private String bDateTime;	//b_datetime
 	private int bViews;			//b_views
-	private String username;	//u_id
-	private User user;
+	private User user;			//User객체 가져오기
 	private List<Comment> comments;
 	
 	
@@ -28,12 +27,16 @@ public class Board {
 	public void setComments(List<Comment> comments) {
 		this.comments = comments;
 	}
-	public String getUsername() {
-		return user != null ? user.getUsername() :  null;
-	}
-	public void setUsername(String username) {
-		this.username = username;
-	}
+
+    public String getUsername() {
+        return user != null ? user.getUsername() : null;
+    }
+
+    public void setUsername(String username) {
+        if (user != null) {
+            user.setUsername(username);
+        }
+    }
 	public int getbViews() {
 		return bViews;
 	}
