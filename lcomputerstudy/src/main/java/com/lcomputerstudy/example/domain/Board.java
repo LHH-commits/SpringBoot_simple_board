@@ -1,13 +1,9 @@
 package com.lcomputerstudy.example.domain;
 
-import java.util.Collection;
+import java.util.List;
+import com.lcomputerstudy.example.domain.User;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-public class Board implements UserDetails {
-	
-	private static final long serialVersionUID = 1L;
+public class Board {
 
 	private int bId;			//b_id
 	private String bTitle;		//b_title
@@ -16,13 +12,24 @@ public class Board implements UserDetails {
 	private String bDateTime;	//b_datetime
 	private int bViews;			//b_views
 	private String username;	//u_id
-	private String password;	//u_password - 근데 이건 UserDetails를 구현하기 위한거라서 여기선 의미없음
+	private User user;
+	private List<Comment> comments;
 	
-	private Collection<? extends GrantedAuthority> authorities;
 	
-	
-	public void setPassword(String password) {
-		this.password = password;
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
+	public List<Comment> getComments() {
+		return comments;
+	}
+	public void setComments(List<Comment> comments) {
+		this.comments = comments;
+	}
+	public String getUsername() {
+		return user != null ? user.getUsername() :  null;
 	}
 	public void setUsername(String username) {
 		this.username = username;
@@ -62,27 +69,5 @@ public class Board implements UserDetails {
 	}
 	public void setbDateTime(String bDateTime) {
 		this.bDateTime = bDateTime;
-	}
-	
-	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-		this.authorities = authorities;
-	}
-	
-	@Override
-	public String getUsername() {
-		// TODO Auto-generated method stub
-		return username;
-	}
-
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return authorities;
-	}
-	
-	@Override
-	public String getPassword() {
-		// TODO Auto-generated method stub
-		return password;
 	}
 }

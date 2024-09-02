@@ -110,7 +110,10 @@ public class Controller {
 		
 		// 게시물의 작성자 u_id와 현재 로그인한 사용자의 u_id를 비교
 		if (board != null) {
-			if(isAdmin || currentUserId.equals(board.getUsername())) {
+			
+			String boardWriterId = board.getUsername();
+			
+			if(isAdmin || currentUserId.equals(boardWriterId)) {
 				boardservice.deleteBoard(bId);
 			} else {
 				return "redirect:/denied"; // 권한이 없는 경우 접근 거부 페이지로 리다이렉트
@@ -133,7 +136,8 @@ public class Controller {
 		
 		// 게시물의 작성자 u_id와 현재 로그인한 사용자의 u_id를 비교
 		if (board != null) {
-			if(currentUserId.equals(board.getUsername())) {
+			String boardWriterId = board.getUsername();
+			if(currentUserId.equals(boardWriterId)) {
 				model.addAttribute("board", board);
 			} else {
 				return "/denied";

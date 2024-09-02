@@ -46,7 +46,7 @@
     <!-- 수정 버튼 권한 -->
     <!-- 현재 로그인한 u_id가 작성자 u_id가 같을때 수정버튼이 뜬다 -->
     <sec:authorize access="isAuthenticated()">
-    	<c:if test="${board.username == principal.username}">
+    	<c:if test="${user.username == principal.username}">
     		<button type="button" onclick="location.href='/editBoard?bId=${board.bId}&page=${page}'">수정</button>
     	</c:if>
     </sec:authorize>
@@ -57,7 +57,7 @@
     </sec:authorize>
     <!-- 관리자 권한을 가지고 있지 않다면 현재 로그인한 u_id가 작성자 u_id가 같을때 버튼이 뜬다 -->
     <sec:authorize access="!hasRole('ROLE_ADMIN')">
-        <c:if test="${board.username == principal.username}">
+        <c:if test="${user.username == principal.username}">
             <button type="button" onclick="confirmDelete(${board.bId})">삭제</button>
         </c:if>
     </sec:authorize>
