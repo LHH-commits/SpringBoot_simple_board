@@ -17,6 +17,7 @@
 	
 	<form action="/insertBoard" method="post">
 	<input type="hidden" name="bWriter" value="${uName }">
+	<input type="hidden" name="username" value="${username }">
         <table>
             <tr>
                 <td>제목:</td>

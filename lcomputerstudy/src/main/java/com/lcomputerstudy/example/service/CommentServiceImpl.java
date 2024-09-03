@@ -32,4 +32,9 @@ public class CommentServiceImpl implements CommentService {
     public void deleteComment(int cId) {
         commentMapper.deleteComment(cId);
     }
+    
+    @Override
+    public void deleteCommentByBid(int bId) {
+    	commentMapper.deleteCommentByBid(bId);
+    }
 }

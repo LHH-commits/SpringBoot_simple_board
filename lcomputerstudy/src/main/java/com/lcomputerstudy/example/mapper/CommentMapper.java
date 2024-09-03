@@ -14,4 +14,6 @@ public interface CommentMapper {
     public void updateComment(Comment comment);
     
     public void deleteComment(int cId);
+    
+    public void deleteCommentByBid(int bId);
 }

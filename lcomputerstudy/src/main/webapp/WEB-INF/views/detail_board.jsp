@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -43,10 +44,13 @@
         <p><strong>조회수:</strong> ${board.bViews}</p>
     </div>
     <sec:authentication property="principal" var="principal"/>
+    <!-- 확인용 코드 -->
+    <p>작성자: ${board.user.username}</p>
+	<p>로그인 사용자: ${principal.username}</p>
     <!-- 수정 버튼 권한 -->
     <!-- 현재 로그인한 u_id가 작성자 u_id가 같을때 수정버튼이 뜬다 -->
     <sec:authorize access="isAuthenticated()">
-    	<c:if test="${user.username == principal.username}">
+    	<c:if test="${board.user.username == principal.username}">
     		<button type="button" onclick="location.href='/editBoard?bId=${board.bId}&page=${page}'">수정</button>
     	</c:if>
     </sec:authorize>
@@ -57,11 +61,34 @@
     </sec:authorize>
     <!-- 관리자 권한을 가지고 있지 않다면 현재 로그인한 u_id가 작성자 u_id가 같을때 버튼이 뜬다 -->
     <sec:authorize access="!hasRole('ROLE_ADMIN')">
-        <c:if test="${user.username == principal.username}">
+        <c:if test="${board.user.username == principal.username}">
             <button type="button" onclick="confirmDelete(${board.bId})">삭제</button>
         </c:if>
     </sec:authorize>
-
+    
+    <!-- 댓글 작성 폼 -->
+    <h2>댓글 작성</h2>
+    <form action="/addComment" method="post">
+    	<input type="hidden" name="username" value="${principal.username }">
+    	<input type="hidden" name="bId" value="${board.bId }"/>
+    	<div>
+    		<label for="cContent">내용:</label>
+    		<textarea id="cContent" name="cContent" rows="4" cols="50"></textarea>
+    	</div>
+    	<div>
+    		<button type="submit">댓글 작성</button>
+    	</div>
+    </form>
+    
+    <!-- 댓글 목록 -->
+    <h2>댓글</h2>
+    <c:forEach var="comment" items="${comments}">
+    	<div>
+    		<p><strong>작성자 </strong>${comment.cWriter}</p>
+    		<p><strong>내용 </strong>${comment.cContent}</p>
+    		<p><strong>작성일시 </strong>${comment.cDatetime}</p>
+    	</div>
+	</c:forEach>
     <br>
     <c:choose>
 	    <c:when test="${empty searchparam.searchOption && empty searchparam.searchKeyword}">

@@ -16,8 +16,8 @@
 		
 		<!-- User객체를 board와 bWriter기준으로 매핑 -->
 		<association property="user" javaType="User" resultMap="UserMap">
-			<id property="username" column="b_writer"/>
-			<result property="uName" column="u_name"/>
+			<id property="username" column="u_id"/>
+			<result property="uName" column="b_writer"/>
 		</association>
 		
 		<!-- Board에 댓글 매핑 -->
@@ -121,7 +121,8 @@
 					b_content,
 					b_writer,
 					b_datetime,
-					b_views
+					b_views,
+					u_id
 		FROM		lc_board
 		WHERE		1=1
 		AND			b_id = #{bId}
