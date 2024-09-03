@@ -22,6 +22,11 @@
 		SELECT * FROM lc_comment WHERE b_id = #{bId}
 	</select>
 	
+	<!-- 개인 댓글 정보 가져오기 -->
+	<select id="getCommentById" parameterType="int" resultMap="CommentMap">
+		SELECT * FROM lc_comment WHERE c_id = #{cId}
+	</select>	
+	
 	<!-- 댓글 개별 삭제 -->
 	<delete id="deleteComment" parameterType="int">
 		DELETE FROM lc_comment WHERE c_id = #{cId}

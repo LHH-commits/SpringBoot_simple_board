@@ -16,4 +16,6 @@ public interface CommentMapper {
     public void deleteComment(int cId);
     
     public void deleteCommentByBid(int bId);
+    
+    public Comment getCommentById(int cId);
 }

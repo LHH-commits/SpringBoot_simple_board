@@ -37,4 +37,9 @@ public class CommentServiceImpl implements CommentService {
     public void deleteCommentByBid(int bId) {
     	commentMapper.deleteCommentByBid(bId);
     }
+    
+    @Override
+    public Comment getCommentById(int cId) {
+    	return commentMapper.getCommentById(cId);
+    }
 }

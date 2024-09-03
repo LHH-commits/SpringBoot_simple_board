@@ -15,4 +15,6 @@ public interface CommentService {
     public void deleteComment(int cId);
     
     public void deleteCommentByBid(int Bid);
+    
+    public Comment getCommentById(int cId);
 }

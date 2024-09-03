@@ -104,6 +104,30 @@ public class Controller {
 		return "redirect:/detailBoard?bId=" + comment.getbId();
 	}
 	
+	@Secured({"ROLE_USER", "ROLE_ADMIN"})
+	@PostMapping("/deleteComment")
+	public String deleteComment(@RequestParam("cId") int cId, Authentication authentication, Model model) {
+		
+		// 현재 로그인한 사용자의 정보
+		User user = (User) authentication.getPrincipal();
+		String loginID = user.getUsername();
+		
+		// 댓글에서 가져온 사용자의 정보
+		Comment comment = commentservice.getCommentById(cId);
+		String comID = comment.getUsername();		
+	
+		// 현재 사용자 권한 확인 (admin 권한 여부 확인)
+		boolean isAdmin = authentication.getAuthorities().stream()
+										.anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
+		
+		if(isAdmin || loginID.equals(comID)) {
+			commentservice.deleteComment(cId);
+			return "redirect:/detailBoard?bId=" + comment.getbId();
+		} else {
+			return "/denied";
+		}
+	}
+	
 	@PostMapping("/deleteBoard")
 	public String deleteBoard(@RequestParam("bId") int bId) {
 		

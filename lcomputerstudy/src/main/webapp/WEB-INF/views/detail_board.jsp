@@ -89,6 +89,23 @@
     		<p><strong>작성일시 </strong>${comment.cDatetime}</p>
     	</div>
 	</c:forEach>
+	<div class="comment">
+        <p>${comment.cContent}</p>
+        <!-- ADMIN 권한일 때 모든 댓글에 삭제 버튼 표시 -->
+        <sec:authorize access="hasRole('ROLE_ADMIN')">
+            <form action="/deleteComment" method="post">
+                <input type="hidden" name="cId" value="${comment.cId}" />
+                <button type="submit">삭제</button>
+            </form>
+        </sec:authorize>
+        <!-- USER 권한일 때 본인의 댓글에만 삭제 버튼 표시 -->
+        <sec:authorize access="hasRole('ROLE_USER') and principal.username == comment.username">
+            <form action="/deleteComment" method="post">
+                <input type="hidden" name="cId" value="${comment.cId}" />
+                <button type="submit">삭제</button>
+            </form>
+        </sec:authorize>
+    </div>
     <br>
     <c:choose>
 	    <c:when test="${empty searchparam.searchOption && empty searchparam.searchKeyword}">
