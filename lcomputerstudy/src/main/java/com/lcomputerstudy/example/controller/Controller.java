@@ -151,6 +151,7 @@ public class Controller {
 	@PostMapping("/updateComment")
 	public String updateComment(@RequestParam("cId") int cId, @ModelAttribute Comment comment, Authentication authentication,
 							@RequestParam(value = "page", defaultValue = "1") int page,
+							@RequestParam("cContent") String cContent,
 							@ModelAttribute SearchParam searchparam, Model model) {
 		
 		// 현재 로그인한 사용자의 정보
@@ -165,6 +166,7 @@ public class Controller {
 		
 		if(loginID.equals(comID)) {
 			comment.setcWriter(user.getuName());
+			comment.setcContent(cContent);
 			commentservice.updateComment(comment);
 			return "redirect:/detailBoard?bId=" + comment.getbId() 
 					+ "&page=" + page
