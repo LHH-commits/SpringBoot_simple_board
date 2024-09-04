@@ -36,5 +36,13 @@
 	<delete id="deleteCommentByBid" parameterType="int">
 		DELETE FROM lc_comment WHERE b_id = #{bId}
 	</delete>
+	
+	<!-- 댓글 수정 -->
+	<update id="updateComment" parameterType="Comment">
+		UPDATE 	lc_comment
+		SET		c_content = #{cContent},
+				c_datetime = NOW()
+		WHERE	c_id = #{cId}
+	</update>
 
 </mapper>

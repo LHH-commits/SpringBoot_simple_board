@@ -24,11 +24,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void updateComment(Comment comment) {
-        commentMapper.updateComment(comment);
-    }
-
-    @Override
     public void deleteComment(int cId) {
         commentMapper.deleteComment(cId);
     }
@@ -41,5 +36,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comment getCommentById(int cId) {
     	return commentMapper.getCommentById(cId);
+    }
+    
+    @Override
+    public void updateComment(Comment comment) {
+        commentMapper.updateComment(comment);
     }
 }

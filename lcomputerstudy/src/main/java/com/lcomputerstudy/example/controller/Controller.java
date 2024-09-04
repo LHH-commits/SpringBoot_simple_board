@@ -1,5 +1,7 @@
 package com.lcomputerstudy.example.controller;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -96,17 +98,30 @@ public class Controller {
 	}
 	
 	@PostMapping("/addComment")
-	public String addComment(@ModelAttribute Comment comment, Authentication authentication) {
+	public String addComment(@ModelAttribute Comment comment, Authentication authentication,
+							@RequestParam(value = "page", defaultValue = "1") int page,
+							@ModelAttribute SearchParam searchparam, Model model) {
 		User user = (User) authentication.getPrincipal();
 		comment.setcWriter(user.getuName());
 		
 		commentservice.addComment(comment);
-		return "redirect:/detailBoard?bId=" + comment.getbId();
+		
+		model.addAttribute("page", page);
+		model.addAttribute("searchparam", searchparam);
+		
+		String encodedKeyword = URLEncoder.encode(searchparam.getSearchKeyword(), StandardCharsets.UTF_8); // searchKeyword가 한글일시 인코딩 오류방지
+		
+		return "redirect:/detailBoard?bId=" + comment.getbId()
+				+ "&page=" + page
+				+ "&searchOption=" + searchparam.getSearchOption()
+				+ "&searchKeyword=" + encodedKeyword;
 	}
 	
 	@Secured({"ROLE_USER", "ROLE_ADMIN"})
 	@PostMapping("/deleteComment")
-	public String deleteComment(@RequestParam("cId") int cId, Authentication authentication, Model model) {
+	public String deleteComment(@RequestParam("cId") int cId, Authentication authentication, Model model,
+								@RequestParam(value = "page", defaultValue = "1") int page,
+								@ModelAttribute SearchParam searchparam) {
 		
 		// 현재 로그인한 사용자의 정보
 		User user = (User) authentication.getPrincipal();
@@ -120,9 +135,41 @@ public class Controller {
 		boolean isAdmin = authentication.getAuthorities().stream()
 										.anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
 		
+		String encodedKeyword = URLEncoder.encode(searchparam.getSearchKeyword(), StandardCharsets.UTF_8);
+		
 		if(isAdmin || loginID.equals(comID)) {
 			commentservice.deleteComment(cId);
-			return "redirect:/detailBoard?bId=" + comment.getbId();
+			return "redirect:/detailBoard?bId=" + comment.getbId() 
+					+ "&page=" + page
+					+ "&searchOption=" + searchparam.getSearchOption()
+					+ "&searchKeyword=" + encodedKeyword;
+		} else {
+			return "/denied";
+		}
+	}
+	
+	@PostMapping("/updateComment")
+	public String updateComment(@RequestParam("cId") int cId, @ModelAttribute Comment comment, Authentication authentication,
+							@RequestParam(value = "page", defaultValue = "1") int page,
+							@ModelAttribute SearchParam searchparam, Model model) {
+		
+		// 현재 로그인한 사용자의 정보
+		User user = (User) authentication.getPrincipal();
+		String loginID = user.getUsername();
+		
+		// 댓글에서 가져온 사용자의 정보
+		comment = commentservice.getCommentById(cId);
+		String comID = comment.getUsername();
+
+		String encodedKeyword = URLEncoder.encode(searchparam.getSearchKeyword(), StandardCharsets.UTF_8);
+		
+		if(loginID.equals(comID)) {
+			comment.setcWriter(user.getuName());
+			commentservice.updateComment(comment);
+			return "redirect:/detailBoard?bId=" + comment.getbId() 
+					+ "&page=" + page
+					+ "&searchOption=" + searchparam.getSearchOption()
+					+ "&searchKeyword=" + encodedKeyword;
 		} else {
 			return "/denied";
 		}

@@ -32,6 +32,13 @@
 			return false;
 		}
 	}
+	
+	function showEditForm(commentId, currentContent) {
+		var form = document.getElementById('editForm_' + commentId);
+		var textarea = form.querySelector('textarea');
+		textarea.value = currentContent;
+		form.style.display = form.style.display === 'none' ? 'block' : 'none';
+	}
 </script>
 </head>
 <body>
@@ -45,12 +52,12 @@
     </div>
     <sec:authentication property="principal" var="principal"/>
     <!-- 확인용 코드 -->
-    <p>작성자: ${board.user.username}</p>
+    <p>작성자: ${user.username}</p>
 	<p>로그인 사용자: ${principal.username}</p>
     <!-- 수정 버튼 권한 -->
     <!-- 현재 로그인한 u_id가 작성자 u_id가 같을때 수정버튼이 뜬다 -->
     <sec:authorize access="isAuthenticated()">
-    	<c:if test="${board.user.username == principal.username}">
+    	<c:if test="${user.username == principal.username}">
     		<button type="button" onclick="location.href='/editBoard?bId=${board.bId}&page=${page}'">수정</button>
     	</c:if>
     </sec:authorize>
@@ -61,16 +68,22 @@
     </sec:authorize>
     <!-- 관리자 권한을 가지고 있지 않다면 현재 로그인한 u_id가 작성자 u_id가 같을때 버튼이 뜬다 -->
     <sec:authorize access="!hasRole('ROLE_ADMIN')">
-        <c:if test="${board.user.username == principal.username}">
+        <c:if test="${user.username == principal.username}">
             <button type="button" onclick="confirmDelete(${board.bId})">삭제</button>
         </c:if>
     </sec:authorize>
     
     <!-- 댓글 작성 폼 -->
     <h2>댓글 작성</h2>
-    <form action="/addComment" method="post">
+    <c:url value="/addComment" var="addCommentUrl">
+    	<c:param name="bId" value="${board.bId }"/>
+    	<c:param name="page" value="${page }"/>
+    	<c:param name="searchOption" value="${searchparam.searchOption }"/>
+    	<c:param name="searchKeyword" value="${searchparam.searchKeyword }"/>
+    </c:url>
+    
+    <form action="${addCommentUrl }" method="post">
     	<input type="hidden" name="username" value="${principal.username }">
-    	<input type="hidden" name="bId" value="${board.bId }"/>
     	<div>
     		<label for="cContent">내용:</label>
     		<textarea id="cContent" name="cContent" rows="4" cols="50"></textarea>
@@ -82,31 +95,60 @@
     
     <!-- 댓글 목록 -->
     <h2>댓글</h2>
+    <c:url value="/deleteComment" var="deleteCommentUrl">
+    	<c:param name="bId" value="${board.bId }"/>
+    	<c:param name="page" value="${page }"/>
+    	<c:param name="searchOption" value="${searchparam.searchOption }"/>
+    	<c:param name="searchKeyword" value="${searchparam.searchKeyword }"/>
+    </c:url>
+    <c:url value="/updateComment" var="updateCommentUrl">
+    	<c:param name="bId" value="${board.bId }"/>
+    	<c:param name="page" value="${page }"/>
+    	<c:param name="searchOption" value="${searchparam.searchOption }"/>
+    	<c:param name="searchKeyword" value="${searchparam.searchKeyword }"/>
+    </c:url>
     <c:forEach var="comment" items="${comments}">
     	<div>
     		<p><strong>작성자 </strong>${comment.cWriter}</p>
     		<p><strong>내용 </strong>${comment.cContent}</p>
     		<p><strong>작성일시 </strong>${comment.cDatetime}</p>
     	</div>
-	</c:forEach>
-	<div class="comment">
-        <p>${comment.cContent}</p>
+    	<div class="comment">
+    	<!-- 본인 댓글만 수정버튼표시 -->
+    	<sec:authorize access="isAuthenticated()">
+    		<c:if test="${principal.username == comment.username }">
+    			<!-- 수정 버튼 클릭시 수정폼 스크립트로 -->
+    			<button type="button" onclick="showEditForm(${comment.cId}, '${comment.cContent }')">수정</button>
+    			<!-- 수정되어서 DB에 업데이트 -->
+    			<div id="editForm_${comment.cId }" style="display:none;">
+	    			<form action="${updateCommentUrl }" method="post">
+	    				<input type="hidden" name="cId" value="${comment.cId }"/>
+	    				<textarea name="cContent">${comment.cContent}</textarea>
+	    				<button type="submit">수정 완료</button>
+	    			</form>
+    			</div>
+    		</c:if>
+    	</sec:authorize>
         <!-- ADMIN 권한일 때 모든 댓글에 삭제 버튼 표시 -->
         <sec:authorize access="hasRole('ROLE_ADMIN')">
-            <form action="/deleteComment" method="post">
+            <form action="${deleteCommentUrl }" method="post">
                 <input type="hidden" name="cId" value="${comment.cId}" />
                 <button type="submit">삭제</button>
             </form>
         </sec:authorize>
         <!-- USER 권한일 때 본인의 댓글에만 삭제 버튼 표시 -->
-        <sec:authorize access="hasRole('ROLE_USER') and principal.username == comment.username">
-            <form action="/deleteComment" method="post">
-                <input type="hidden" name="cId" value="${comment.cId}" />
-                <button type="submit">삭제</button>
-            </form>
+        <sec:authorize access="hasRole('ROLE_USER')">
+        	<c:if test="${principal.username == comment.username}">
+	            <form action="${deleteCommentUrl }" method="post">
+	                <input type="hidden" name="cId" value="${comment.cId}" />
+	                <button type="submit">삭제</button>
+	            </form>
+            </c:if>
         </sec:authorize>
-    </div>
-    <br>
+    	</div>
+    	<br>
+	</c:forEach>
+	
     <c:choose>
 	    <c:when test="${empty searchparam.searchOption && empty searchparam.searchKeyword}">
 	    	<a href="/list?page=${page}">목록으로 돌아가기</a>
