@@ -39,6 +39,15 @@
 		textarea.value = currentContent;
 		form.style.display = form.style.display === 'none' ? 'block' : 'none';
 	}
+	
+	function showReplyForm(commentId) {
+		var replyForm = document.getElementById("replyForm_" + commentId);
+		if(replyForm.style.display === "none") {
+			replyForm.style.display = "block";
+		} else {
+			replyForm.style.display = "none";
+		}
+	}
 </script>
 </head>
 <body>
@@ -114,6 +123,18 @@
     		<p><strong>작성일시 </strong>${comment.cDatetime}</p>
     	</div>
     	<div class="comment">
+    	<!-- 대댓글 폼 버튼 -->
+    	<div>
+    		<button type="button" onclick="showReplyForm(${comment.cId})">답글</button>
+    		<div id="replyForm_${comment.cId}" style="display:none;">
+    			<form action="${addCommentUrl }" method="post">
+    				<input type="hidden" name="parentId" value="${comment.cId }"/>
+    				<input type="hidden" name="username" value="${principal.username }">
+    				<textarea name="cContent"></textarea>
+    				<button type="submit">작성</button>
+    			</form>
+    		</div>
+    	</div>
     	<!-- 본인 댓글만 수정버튼표시 -->
     	<sec:authorize access="isAuthenticated()">
     		<c:if test="${principal.username == comment.username }">
@@ -145,6 +166,59 @@
 	            </form>
             </c:if>
         </sec:authorize>
+        
+        <!-- 대댓글 목록 -->
+        <c:forEach var="reply" items="${comment.replies}">
+	    	<div style="margin-left: 50px;">
+	    		<p><strong>작성자 </strong>${reply.cWriter}</p>
+	    		<p><strong>내용 </strong>${reply.cContent}</p>
+	    		<p><strong>작성일시 </strong>${reply.cDatetime}</p>
+	    		
+	    		<div>
+		    		<button type="button" onclick="showReplyForm(${reply.cId})">답글</button>
+		    		<div id="replyForm_${reply.cId}" style="display:none;">
+		    			<form action="${addCommentUrl }" method="post">
+		    				<input type="hidden" name="parentId" value="${reply.cId }"/>
+		    				<input type="hidden" name="username" value="${principal.username }">
+		    				<textarea name="cContent"></textarea>
+		    				<button type="submit">작성</button>
+		    			</form>
+		    		</div>
+		    	</div>
+		    	<!-- 본인 댓글만 수정버튼표시 -->
+		    	<sec:authorize access="isAuthenticated()">
+		    		<c:if test="${principal.username == reply.username }">
+		    			<!-- 수정 버튼 클릭시 수정폼 스크립트로 -->
+		    			<button type="button" onclick="showEditForm(${reply.cId}, '${reply.cContent }')">수정</button>
+		    			<!-- 수정되어서 DB에 업데이트 -->
+		    			<div id="editForm_${reply.cId }" style="display:none;">
+			    			<form action="${updateCommentUrl }" method="post">
+			    				<input type="hidden" name="cId" value="${reply.cId }"/>
+			    				<textarea name="cContent">${reply.cContent}</textarea>
+			    				<button type="submit">수정 완료</button>
+			    			</form>
+		    			</div>
+		    		</c:if>
+		    	</sec:authorize>
+		        <!-- ADMIN 권한일 때 모든 댓글에 삭제 버튼 표시 -->
+		        <sec:authorize access="hasRole('ROLE_ADMIN')">
+		            <form action="${deleteCommentUrl }" method="post">
+		                <input type="hidden" name="cId" value="${reply.cId}" />
+		                <button type="submit">삭제</button>
+		            </form>
+		        </sec:authorize>
+		        <!-- USER 권한일 때 본인의 댓글에만 삭제 버튼 표시 -->
+		        <sec:authorize access="hasRole('ROLE_USER')">
+		        	<c:if test="${principal.username == reply.username}">
+			            <form action="${deleteCommentUrl }" method="post">
+			                <input type="hidden" name="cId" value="${reply.cId}" />
+			                <button type="submit">삭제</button>
+			            </form>
+		            </c:if>
+		        </sec:authorize>
+	    	</div>
+	    	
+    	</c:forEach>
     	</div>
     	<br>
 	</c:forEach>

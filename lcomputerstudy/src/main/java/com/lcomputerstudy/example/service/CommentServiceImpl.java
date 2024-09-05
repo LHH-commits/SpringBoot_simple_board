@@ -22,6 +22,25 @@ public class CommentServiceImpl implements CommentService {
     public List<Comment> ListCommentsByBid(int bId) {
         return commentMapper.ListCommentsByBid(bId);
     }
+    
+    @Override
+    public List<Comment> ListReplies(int parentId) {
+    	return commentMapper.ListReplies(parentId);
+    }
+    
+    @Override
+    public List<Comment> getAllComments(int bId) {
+    	// 기존에 사용한 bId로 댓글 조회한걸 comments에 저장
+    	List<Comment> comments = commentMapper.ListCommentsByBid(bId);
+    	
+    	// 각 댓글마다 대댓글 설정
+    	for(Comment comment : comments) {
+    		List<Comment> replies = commentMapper.ListReplies(comment.getcId());
+    		comment.setReplies(replies);
+    	}
+    	
+    	return comments;
+    }
 
     @Override
     public void deleteComment(int cId) {

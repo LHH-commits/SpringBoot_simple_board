@@ -87,7 +87,7 @@ public class Controller {
 								@ModelAttribute SearchParam searchparam,
 								Model model, Authentication authentication) {
 		Board boardID = boardservice.selectBoardBid(bId);
-		List<Comment> comments = commentservice.ListCommentsByBid(bId);
+		List<Comment> comments = commentservice.getAllComments(bId);
 		User user = (User) authentication.getPrincipal();
 		model.addAttribute("board", boardID);
 		model.addAttribute("comments", comments);

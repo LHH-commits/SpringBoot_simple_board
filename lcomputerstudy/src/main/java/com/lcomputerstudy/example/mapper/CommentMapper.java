@@ -14,6 +14,9 @@ public interface CommentMapper {
     // 댓글 목록
     public List<Comment> ListCommentsByBid(int bId);
     
+    // 대댓글 목록
+    public List<Comment> ListReplies(int parentId);
+    
     // 댓글 개별 삭제
     public void deleteComment(int cId);
     

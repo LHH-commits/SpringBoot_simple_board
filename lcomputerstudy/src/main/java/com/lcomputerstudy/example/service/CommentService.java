@@ -10,9 +10,13 @@ public interface CommentService {
     
     public List<Comment> ListCommentsByBid(int bId);
     
+    public List<Comment> ListReplies(int parentId);
+    
+    public List<Comment> getAllComments(int bId);
+    
     public void deleteComment(int cId);
     
-    public void deleteCommentByBid(int Bid);
+    public void deleteCommentByBid(int bId);
     
     public Comment getCommentById(int cId);
 

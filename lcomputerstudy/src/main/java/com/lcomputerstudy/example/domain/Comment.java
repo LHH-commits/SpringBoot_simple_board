@@ -1,5 +1,7 @@
 package com.lcomputerstudy.example.domain;
 
+import java.util.List;
+
 public class Comment {
 
 	private int cId;			//c_id
@@ -8,7 +10,17 @@ public class Comment {
 	private String cDatetime;	//c_datetime
 	private int bId;			//b_id
 	private String username;	//u_id
+	private int parentId;		//parent_id
 	
+	private List<Comment> replies; //대댓글 리스트를 저장할 필드
+	
+	
+	public List<Comment> getReplies() {
+		return replies;
+	}
+	public void setReplies(List<Comment> replies) {
+		this.replies = replies;
+	}
 	public int getcId() {
 		return cId;
 	}
@@ -44,6 +56,12 @@ public class Comment {
 	}
 	public void setUsername(String username) {
 		this.username = username;
+	}
+	public int getParentId() {
+		return parentId;
+	}
+	public void setParentId(int parentId) {
+		this.parentId = parentId;
 	}
 	
 	
