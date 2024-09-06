@@ -1,0 +1,28 @@
+package com.lcomputerstudy.example.service;
+
+import com.lcomputerstudy.example.domain.Comment;
+
+import java.util.List;
+
+public interface CommentService {
+	
+    public void addComment(Comment comment);
+    
+    public void updateGroup(int cId);
+    
+    public void addReply(Comment comment)l
+    
+    public List<Comment> ListCommentsByBid(int bId);
+    
+    public List<Comment> ListReplies(int parentId);
+    
+    public List<Comment> getAllComments(int bId);
+    
+    public void deleteComment(int cId);
+    
+    public void deleteCommentByBid(int bId);
+    
+    public Comment getCommentById(int cId);
+
+    public void updateComment(Comment comment);
+}

@@ -11,6 +11,12 @@ public interface CommentMapper {
 	// 댓글 작성
     public void addComment(Comment comment);
     
+    // 댓글의 cId 부여를 위한 업데이트
+    public void updateGroup(int cId);
+    
+    // 대댓글 작성
+    public void addReply(Comment comment);
+    
     // 댓글 목록
     public List<Comment> ListCommentsByBid(int bId);
     

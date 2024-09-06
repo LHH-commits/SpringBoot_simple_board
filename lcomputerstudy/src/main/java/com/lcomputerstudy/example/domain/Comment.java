@@ -4,13 +4,16 @@ import java.util.List;
 
 public class Comment {
 
-	private int cId;			//c_id
+	private int cId;			//c_id pk
 	private String cContent;	//c_content
 	private String cWriter;		//c_writer
 	private String cDatetime;	//c_datetime
 	private int bId;			//b_id
 	private String username;	//u_id
 	private int parentId;		//parent_id
+	private int group;			//어느 댓글에 속하는가
+	private int order;			//한 댓글에서 몇번째에 해당하는가(Ex 부모댓(1) 대댓(2) 대댓의 대댓(3) 새로운대댓(4) 이런식)
+	private int depth;			//메인(0) 대댓글(1) 대댓글의 대댓글(2) ... 이런식으로 증가
 	
 	private List<Comment> replies; //대댓글 리스트를 저장할 필드
 	
@@ -20,6 +23,25 @@ public class Comment {
 	}
 	public void setReplies(List<Comment> replies) {
 		this.replies = replies;
+	}
+	
+	public int getGroup() {
+		return group;
+	}
+	public void setGroup(int group) {
+		this.group = group;
+	}
+	public int getOrder() {
+		return order;
+	}
+	public void setOrder(int order) {
+		this.order = order;
+	}
+	public int getDepth() {
+		return depth;
+	}
+	public void setDepth(int depth) {
+		this.depth = depth;
 	}
 	public int getcId() {
 		return cId;

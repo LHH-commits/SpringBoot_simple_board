@@ -8,6 +8,8 @@ public interface CommentService {
 	
     public void addComment(Comment comment);
     
+    public void addReply(Comment comment);
+    
     public List<Comment> ListCommentsByBid(int bId);
     
     public List<Comment> ListReplies(int parentId);

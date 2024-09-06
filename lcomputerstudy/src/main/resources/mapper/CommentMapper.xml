@@ -10,12 +10,42 @@
 		<result property="bId" column="b_id"/>
 		<result property="username" column="u_id"/>
 		<result property="parentId" column="parent_id"/>
+		<result property="group" column="group"/>
+		<result property="order" column="order"/>
+		<result property="depth" column="depth"/>
 	</resultMap>
 	
 	<!-- 댓글 작성 -->
 	<insert id="addComment" parameterType="Comment">
-		INSERT INTO lc_comment (b_id, c_content, c_writer, u_id, parent_id)
-		VALUES (#{bId}, #{cContent}, #{cWriter}, #{username}, #{parentId})
+		INSERT INTO lc_comment (b_id, c_content, c_writer, u_id, parent_id, `order`, depth)
+		VALUES (#{bId}, #{cContent}, #{cWriter}, #{username}, #{parentId}, 1, 0);
+		<selectKey keyProperty="cId" resultType="int" order="AFTER">
+			SELECT LAST_INSERT_ID();
+		</selectKey>
+	</insert>
+	
+	<!-- c_id를 그룹에 셋 -->
+	<update id="updateGroup" parameterType="int">
+		UPDATE 	lc_comment
+		SET		`group` = #{cId}
+		WHERE	c_id = #{cId}
+	</update>
+	
+	<!-- 대댓글 작성 -->
+	<insert id="addReply" parameterType="Comment">
+		<!-- 상위 댓글의 정보를 가져옴 -->
+		SELECT `group`, `order`, `depth`
+		FROM	lc_comment
+		WHERE	c_id = #{parent_id};
+		
+		<!-- order값 증가 -->
+		UPDATE lc_comment
+		SET		`order` = `order` + 1
+		WHERE	`group` = #{group} AND `order` > #{order};
+		
+		<!-- 대댓글 추가 -->
+		INSERT INTO lc_comment (b_id, c_content, c_writer, u_id, parent_id, `group`, `order`, depth)
+		VALUES (#{bId}, #{cContent}, #{cWriter}, #{username}, #{parentId}, #{group}, #{order}+1, #{depth}+1);
 	</insert>
 	
 	<!-- 댓글 조회 -->
