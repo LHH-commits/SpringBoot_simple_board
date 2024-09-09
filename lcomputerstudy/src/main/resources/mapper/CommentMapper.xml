@@ -32,18 +32,22 @@
 	</update>
 	
 	<!-- 대댓글 작성 -->
-	<insert id="addReply" parameterType="Comment">
-		<!-- 상위 댓글의 정보를 가져옴 -->
+	<!-- 상위 댓글의 정보를 가져옴 -->
+	<select id="getCommentGOD" parameterType="int" resultType="map">
 		SELECT `group`, `order`, `depth`
 		FROM	lc_comment
-		WHERE	c_id = #{parent_id};
+		WHERE	c_id = #{parentId};
+	</select>
 		
-		<!-- order값 증가 -->
+	<!-- 댓글 달때마다 order값 증가 -->
+	<update id="increaseOrder">
 		UPDATE lc_comment
 		SET		`order` = `order` + 1
 		WHERE	`group` = #{group} AND `order` > #{order};
+	</update>
 		
-		<!-- 대댓글 추가 -->
+	<!-- 대댓글 추가 -->
+	<insert id="insertReply" parameterType="Comment">
 		INSERT INTO lc_comment (b_id, c_content, c_writer, u_id, parent_id, `group`, `order`, depth)
 		VALUES (#{bId}, #{cContent}, #{cWriter}, #{username}, #{parentId}, #{group}, #{order}+1, #{depth}+1);
 	</insert>

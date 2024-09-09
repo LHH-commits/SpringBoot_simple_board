@@ -97,6 +97,7 @@ public class Controller {
 		return "/detail_board";
 	}
 	
+	// 댓글 추가
 	@PostMapping("/addComment")
 	public String addComment(@ModelAttribute Comment comment, Authentication authentication,
 							@RequestParam(value = "page", defaultValue = "1") int page,
@@ -110,6 +111,27 @@ public class Controller {
 		model.addAttribute("searchparam", searchparam);
 		
 		String encodedKeyword = URLEncoder.encode(searchparam.getSearchKeyword(), StandardCharsets.UTF_8); // searchKeyword가 한글일시 인코딩 오류방지
+		
+		return "redirect:/detailBoard?bId=" + comment.getbId()
+				+ "&page=" + page
+				+ "&searchOption=" + searchparam.getSearchOption()
+				+ "&searchKeyword=" + encodedKeyword;
+	}
+	
+	// 대댓글 추가
+	@PostMapping("/addReply")
+	public String addReply(@ModelAttribute Comment comment, Authentication authentication,
+							@RequestParam(value = "page", defaultValue = "1") int page,
+							@ModelAttribute SearchParam searchparam, Model model) {
+		User user = (User) authentication.getPrincipal();
+		comment.setcWriter(user.getuName());
+		
+		commentservice.addReply(comment);
+		
+		model.addAttribute("page", page);
+		model.addAttribute("searchparam", searchparam);
+		
+		String encodedKeyword = URLEncoder.encode(searchparam.getSearchKeyword(), StandardCharsets.UTF_8);
 		
 		return "redirect:/detailBoard?bId=" + comment.getbId()
 				+ "&page=" + page

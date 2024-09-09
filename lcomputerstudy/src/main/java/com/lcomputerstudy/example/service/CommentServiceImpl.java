@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -21,7 +22,18 @@ public class CommentServiceImpl implements CommentService {
     
     @Override
     public void addReply(Comment comment) {
-    	commentMapper.addReply(comment);
+    	Map<String, Object> parentCommentInfo = commentMapper.getCommentGOD(comment.getParentId());
+    	int group = (Integer) parentCommentInfo.get("group");
+    	int order = (Integer) parentCommentInfo.get("order");
+    	int depth = (Integer) parentCommentInfo.get("depth");
+    	
+    	commentMapper.increaseOrder(group, order);
+    	
+    	comment.setGroup(group);
+    	comment.setOrder(order + 1);
+    	comment.setDepth(depth + 1);
+    	
+    	commentMapper.insertReply(comment);
     }
     
     @Override

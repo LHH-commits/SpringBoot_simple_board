@@ -42,11 +42,7 @@
 	
 	function showReplyForm(commentId) {
 		var replyForm = document.getElementById("replyForm_" + commentId);
-		if(replyForm.style.display === "none") {
-			replyForm.style.display = "block";
-		} else {
-			replyForm.style.display = "none";
-		}
+		replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
 	}
 </script>
 </head>
@@ -93,6 +89,9 @@
     
     <form action="${addCommentUrl }" method="post">
     	<input type="hidden" name="username" value="${principal.username }">
+    	<input type="hidden" name="group" value="0">
+    	<input type="hidden" name="order" value="1">
+    	<input type="hidden" name="depth" value="0">
     	<div>
     		<label for="cContent">내용:</label>
     		<textarea id="cContent" name="cContent" rows="4" cols="50"></textarea>
@@ -127,9 +126,16 @@
     	<div>
     		<button type="button" onclick="showReplyForm(${comment.cId})">답글</button>
     		<div id="replyForm_${comment.cId}" style="display:none;">
-    			<form action="${addCommentUrl }" method="post">
+    			<form action="/addReply" method="post">
     				<input type="hidden" name="parentId" value="${comment.cId }"/>
+    				<input type="hidden" name="group" value="${comment.group }">
+    				<input type="hidden" name="order" value="${comment.order + 1 }">
+    				<input type="hidden" name="depth" value="${comment.depth + 1 }">
     				<input type="hidden" name="username" value="${principal.username }">
+    				<input type="hidden" name="bId" value="${board.bId }">
+    				<input type="hidden" name="page" value="${page }">
+    				<input type="hidden" name="searchOption" value="${searchparam.searchOption }">
+    				<input type="hidden" name="searchKeyword" value="${searchparam.searchKeyword }">
     				<textarea name="cContent"></textarea>
     				<button type="submit">작성</button>
     			</form>
@@ -166,7 +172,7 @@
 	            </form>
             </c:if>
         </sec:authorize>
-        
+    
         <!-- 대댓글 목록 -->
         <c:forEach var="reply" items="${comment.replies}">
 	    	<div style="margin-left: 50px;">
@@ -177,9 +183,16 @@
 	    		<div>
 		    		<button type="button" onclick="showReplyForm(${reply.cId})">답글</button>
 		    		<div id="replyForm_${reply.cId}" style="display:none;">
-		    			<form action="${addCommentUrl }" method="post">
+		    			<form action="/addReply" method="post">
 		    				<input type="hidden" name="parentId" value="${reply.cId }"/>
+		    				<input type="hidden" name="group" value="${reply.group }">
+		    				<input type="hidden" name="order" value="${reply.order + 1 }">
+		    				<input type="hidden" name="depth" value="${reply.depth + 1 }">
 		    				<input type="hidden" name="username" value="${principal.username }">
+		    				<input type="hidden" name="bId" value="${board.bId}">
+		    				<input type="hidden" name="page" value="${page}">
+		    				<input type="hidden" name="searchOption" value="${searchparam.searchOption}">
+		    				<input type="hidden" name="searchKeyword" value="${searchparam.searchKeyword}">
 		    				<textarea name="cContent"></textarea>
 		    				<button type="submit">작성</button>
 		    			</form>

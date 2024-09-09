@@ -2,8 +2,10 @@ package com.lcomputerstudy.example.mapper;
 
 import com.lcomputerstudy.example.domain.Comment;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface CommentMapper {
@@ -14,8 +16,14 @@ public interface CommentMapper {
     // 댓글의 cId 부여를 위한 업데이트
     public void updateGroup(int cId);
     
+    // 상위 댓글의 GOD 가져오기
+    public Map<String, Object> getCommentGOD(int parentId);
+    
+    // order값 증가
+    public void increaseOrder(@Param("group") int group, @Param("order") int order);
+    
     // 대댓글 작성
-    public void addReply(Comment comment);
+    public void insertReply(Comment comment);
     
     // 댓글 목록
     public List<Comment> ListCommentsByBid(int bId);
