@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lcomputerstudy.example.mapper.BoardMapper">
+	
+	<resultMap id="BoardMap" type="Board">
+		<id property="bId" column="b_id"/>
+		<result property="bTitle" column="b_title"/>
+		<result property="bContent" column="b_content"/>
+		<result property="bWriter" column="b_writer"/>
+		<result property="bDateTime" column="b_datetime"/>
+		<result property="bViews" column="b_views"/>
+		<result property="username" column="u_id"/>
+	</resultMap>
+	
+	<!-- 게시물 목록 -->
+	<select id="selectBoardList" parameterType="Pagination" resultMap="BoardMap">
+	    SELECT		b_id,
+				    b_title,
+				    b_content,
+				    b_writer,
+				    b_datetime,
+				    b_views,
+				    u_id
+	    FROM        lc_board
+	    ORDER BY	b_datetime DESC
+	    LIMIT		#{boardsPerPage}, #{perPage}
+	</select>
+	
+	<!-- 페이징 적용을 위한 게시물 카운트 -->
+	<select id="countBoard" resultType="int">
+		SELECT	COUNT(*) 
+		FROM 	lc_board
+	</select>
+	
+	<!-- 검색을 적용시켰을때 나오는 리스트 -->
+	<select id="searchBoard" parameterType="SearchParam" resultMap="BoardMap">
+	    SELECT		b_id,
+				    b_title,
+				    b_content,
+				    b_writer,
+				    b_datetime,
+				    b_views,
+				    u_id
+	    FROM        lc_board
+	    WHERE		1=1
+	    <if test="searchOption == 'title'">
+	        AND b_title LIKE CONCAT('%', #{searchKeyword}, '%')
+	    </if>
+	    <if test="searchOption == 'content'">
+	        AND b_content LIKE CONCAT('%', #{searchKeyword}, '%')
+	    </if>
+	    <if test="searchOption == 'titleContent'">
+        AND (b_title LIKE CONCAT('%', #{searchKeyword}, '%') 
+            OR b_content LIKE CONCAT('%', #{searchKeyword}, '%'))
+    	</if>
+	    ORDER BY	b_datetime DESC
+	    LIMIT		#{boardsPerPage}, #{perPage}
+	</select>
+	
+	<!-- 검색을 위한 게시물 카운트 -->
+	<select id="countSearchBoard" parameterType="Pagination" resultType="int">
+	    SELECT COUNT(*)
+	    FROM lc_board
+	    WHERE 1=1
+	    <if test="searchOption == 'title'">
+	        AND b_title LIKE CONCAT('%', #{searchKeyword}, '%')
+	    </if>
+	    <if test="searchOption == 'content'">
+	        AND b_content LIKE CONCAT('%', #{searchKeyword}, '%')
+	    </if>
+	    <if test="searchOption == 'titleContent'">
+	        AND (b_title LIKE CONCAT('%', #{searchKeyword}, '%')
+	            OR b_content LIKE CONCAT('%', #{searchKeyword}, '%'))
+	    </if>
+	</select>
+	
+	<!-- 게시물 작성(추가) -->
+	<insert id="insertBoard" parameterType="Board">
+		INSERT INTO	lc_board (
+			b_title,
+			b_content,
+			b_writer,
+			u_id
+		) VALUES (
+			#{bTitle},
+			#{bContent},
+			#{bWriter},
+			#{username}
+		)
+	</insert>
+	
+	<!-- 게시물의 b_id를 기준으로 선택하여 상세보기 -->
+	<!-- 게시물의 b_id를 기준으로 게시물의 정보를 가져오기때문에 수정시에도 정보를 가져오기위해 사용 -->
+	<select id="selectBoardBid" parameterType="Integer" resultMap="BoardMap">
+		SELECT		b_id,
+					b_title,
+					b_content,
+					b_writer,
+					b_datetime,
+					b_views,
+					u_id
+		FROM		lc_board
+		WHERE		1=1
+		AND			b_id = #{bId}
+	</select>
+	
+	<!-- 게시물 조회수 증가 -->
+	<update id="countViews" parameterType="Integer">
+		UPDATE		lc_board
+		SET			b_views = b_views+1
+		WHERE		b_id = #{bId}
+	</update>
+	
+	<!-- 게시물 삭제 -->
+	<delete id="deleteBoard" parameterType="Integer">
+		DELETE FROM	lc_board
+		WHERE		1=1
+		AND			b_id = #{bId}
+	</delete>
+	
+	<!-- 게시물 수정 -->
+	<!-- 수정할 게시글을 선택하는 것은 기존에 selectBoardBid를 재사용하기 때문에 다시 만들필요는 없다 -->
+	<!-- 수정된 내용을 반영 -->
+	<update id="updateBoard" parameterType="Board">
+		UPDATE	 	lc_board 
+		SET			b_title = #{bTitle},
+					b_content = #{bContent},
+					b_datetime = NOW()
+		WHERE		1=1
+		AND			b_id = #{bId}
+	</update>
+	
+</mapper>

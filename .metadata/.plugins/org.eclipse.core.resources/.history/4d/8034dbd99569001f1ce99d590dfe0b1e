@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lcomputerstudy.example.mapper.BoardMapper">
+	
+	<!-- property 는 해당 클래스에 있는 속성명 -->
+	<!-- type은 매핑할 클래스 -->
+	<!-- javaType은 특정타입으로의 변환이 필요할 경우 -->
+	<!-- ofType collection매핑에서 여러 자식 객체를 포함할때 자식 객체들의 타입 -->
+	<resultMap id="BoardMap" type="Board">
+		<id property="bId" column="b_id"/>
+		<result property="bTitle" column="b_title"/>
+		<result property="bContent" column="b_content"/>
+		<result property="bWriter" column="b_writer"/>
+		<result property="bDateTime" column="b_datetime"/>
+		<result property="bViews" column="b_views"/>
+		
+		<!-- User객체를 board와 bWriter기준으로 매핑 -->
+		<association property="user" javaType="User" resultMap="UserMap">
+			<id property="uName" column="b_writer"/>
+			<result property="username" column="u_id"/>
+		</association>
+		
+		<!-- Board에 댓글 매핑 -->
+		<collection property="comments" ofType="Comment" resultMap="CommentMap"/>
+	</resultMap>
+	
+	<resultMap id="UserMap" type="User">
+		<id property="username" column="u_id"/>
+		<result property="uName" column="u_name"/>
+	</resultMap>
+	
+	<resultMap id="CommentMap" type="Comment">
+		<id property="cId" column="c_id"/>
+		<result property="cWriter" column="c_writer"/>
+		<result property="cContent" column="c_content"/>
+		<result property="cDateTime" column="c_datetime"/>
+		<result property="bId" column="b_id"/>
+		<result property="username" column="u_id"/>
+	</resultMap>
+	
+	<!-- 게시물 목록 -->
+	<select id="selectBoardList" parameterType="Pagination" resultMap="BoardMap">
+	    SELECT		b_id,
+				    b_title,
+				    b_content,
+				    b_writer,
+				    b_datetime,
+				    b_views
+	    FROM        lc_board
+	    ORDER BY	b_datetime DESC
+	    LIMIT		#{boardsPerPage}, #{perPage}
+	</select>
+	
+	<!-- 페이징 적용을 위한 게시물 카운트 -->
+	<select id="countBoard" resultType="int">
+		SELECT	COUNT(*) 
+		FROM 	lc_board
+	</select>
+	
+	<!-- 검색을 적용시켰을때 나오는 리스트 -->
+	<select id="searchBoard" parameterType="map" resultMap="BoardMap">
+	    SELECT		b_id,
+				    b_title,
+				    b_content,
+				    b_writer,
+				    b_datetime,
+				    b_views
+	    FROM        lc_board
+	    WHERE		1=1
+	    <if test="searchOption == 'title'">
+	        AND b_title LIKE CONCAT('%', #{searchKeyword}, '%')
+	    </if>
+	    <if test="searchOption == 'content'">
+	        AND b_content LIKE CONCAT('%', #{searchKeyword}, '%')
+	    </if>
+	    <if test="searchOption == 'titleContent'">
+        AND (b_title LIKE CONCAT('%', #{searchKeyword}, '%') 
+            OR b_content LIKE CONCAT('%', #{searchKeyword}, '%'))
+    	</if>
+	    ORDER BY	b_datetime DESC
+	    LIMIT		#{boardsPerPage}, #{perPage}
+	</select>
+	
+	<!-- 검색을 위한 게시물 카운트 -->
+	<select id="countSearchBoard" parameterType="SearchParam" resultType="int">
+	    SELECT COUNT(*)
+	    FROM lc_board
+	    WHERE 1=1
+	    <if test="searchOption == 'title'">
+	        AND b_title LIKE CONCAT('%', #{searchKeyword}, '%')
+	    </if>
+	    <if test="searchOption == 'content'">
+	        AND b_content LIKE CONCAT('%', #{searchKeyword}, '%')
+	    </if>
+	    <if test="searchOption == 'titleContent'">
+	        AND (b_title LIKE CONCAT('%', #{searchKeyword}, '%')
+	            OR b_content LIKE CONCAT('%', #{searchKeyword}, '%'))
+	    </if>
+	</select>
+	
+	<!-- 게시물 작성(추가) -->
+	<insert id="insertBoard" parameterType="Board">
+		INSERT INTO	lc_board (
+			b_title,
+			b_content,
+			b_writer,
+			u_id
+		) VALUES (
+			#{bTitle},
+			#{bContent},
+			#{bWriter},
+			#{username}
+		)
+	</insert>
+	
+	<!-- 게시물의 b_id를 기준으로 선택하여 상세보기 -->
+	<!-- 게시물의 b_id를 기준으로 게시물의 정보를 가져오기때문에 수정시에도 정보를 가져오기위해 사용 -->
+	<select id="selectBoardBid" parameterType="Integer" resultMap="BoardMap">
+		SELECT		b_id,
+					b_title,
+					b_content,
+					b_writer,
+					b_datetime,
+					b_views,
+					u_id
+		FROM		lc_board
+		WHERE		1=1
+		AND			b_id = #{bId}
+	</select>
+	
+	<!-- 게시물 조회수 증가 -->
+	<update id="countViews" parameterType="Integer">
+		UPDATE		lc_board
+		SET			b_views = b_views+1
+		WHERE		b_id = #{bId}
+	</update>
+	
+	<!-- 게시물 삭제 -->
+	<delete id="deleteBoard" parameterType="Integer">
+		DELETE FROM	lc_board
+		WHERE		1=1
+		AND			b_id = #{bId}
+	</delete>
+	
+	<!-- 게시물 수정 -->
+	<!-- 수정할 게시글을 선택하는 것은 기존에 selectBoardBid를 재사용하기 때문에 다시 만들필요는 없다 -->
+	<!-- 수정된 내용을 반영 -->
+	<update id="updateBoard" parameterType="Board">
+		UPDATE	 	lc_board 
+		SET			b_title = #{bTitle},
+					b_content = #{bContent},
+					b_datetime = NOW()
+		WHERE		1=1
+		AND			b_id = #{bId}
+	</update>
+	
+</mapper>

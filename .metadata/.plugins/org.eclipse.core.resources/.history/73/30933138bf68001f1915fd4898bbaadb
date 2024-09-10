@@ -1,0 +1,42 @@
+package com.lcomputerstudy.example.domain;
+
+public class Comment {
+
+	private int cId;
+	private String cContent;
+	private String cDatetime;
+	private int bId;
+	private String username;
+	public int getcId() {
+		return cId;
+	}
+	public void setcId(int cId) {
+		this.cId = cId;
+	}
+	public String getcContent() {
+		return cContent;
+	}
+	public void setcContent(String cContent) {
+		this.cContent = cContent;
+	}
+	public String getcDatetime() {
+		return cDatetime;
+	}
+	public void setcDatetime(String cDatetime) {
+		this.cDatetime = cDatetime;
+	}
+	public int getbId() {
+		return bId;
+	}
+	public void setbId(int bId) {
+		this.bId = bId;
+	}
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	
+	
+}

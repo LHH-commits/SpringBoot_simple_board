@@ -160,7 +160,7 @@
         		<input type="hidden" name="uId" value="${principal.username }">
         		<input type="hidden" name="parentId" value="${comment.cId }">
         		<input type="hidden" name="group" value="${comment.group }">
-        		<input type="hidden" name="order" value="${comment.order + 1 }">
+        		<input type="hidden" name="order" value="${comment.order }">
         		<input type="hidden" name="depth" value="${comment.depth + 1 }">
         		<textarea name="cContent" rows="2" cols="50"></textarea>
         		<button type="submit">작성</button>

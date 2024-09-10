@@ -1,0 +1,17 @@
+package com.lcomputerstudy.example.mapper;
+
+import com.lcomputerstudy.example.domain.Comment;
+import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
+
+@Mapper
+public interface CommentMapper {
+    public void addComment(Comment comment);
+    
+    public List<Comment> selectCommentsByBid(int bId);
+    
+    public void updateComment(Comment comment);
+    
+    public void deleteComment(int cId);
+}
