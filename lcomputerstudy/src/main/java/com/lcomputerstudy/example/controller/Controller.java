@@ -104,11 +104,17 @@ public class Controller {
 							@ModelAttribute SearchParam searchparam, Model model) {
 		User user = (User) authentication.getPrincipal();
 		comment.setcWriter(user.getuName());
+		comment.setUsername(user.getUsername());
 		
-		commentservice.addComment(comment);
+		if (comment.getParentId() > 0) {
+			commentservice.addReply(comment);
+		} else {
+			commentservice.addComment(comment);
+		}
 		
 		model.addAttribute("page", page);
 		model.addAttribute("searchparam", searchparam);
+		model.addAttribute("Comment", comment);
 		
 		String encodedKeyword = URLEncoder.encode(searchparam.getSearchKeyword(), StandardCharsets.UTF_8); // searchKeyword가 한글일시 인코딩 오류방지
 		

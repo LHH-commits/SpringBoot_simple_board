@@ -22,16 +22,13 @@ public class CommentServiceImpl implements CommentService {
     
     @Override
     public void addReply(Comment comment) {
-    	Map<String, Object> parentCommentInfo = commentMapper.getCommentGOD(comment.getParentId());
-    	int group = (Integer) parentCommentInfo.get("group");
-    	int order = (Integer) parentCommentInfo.get("order");
-    	int depth = (Integer) parentCommentInfo.get("depth");
+    	Comment parentComment = commentMapper.getCommentById(comment.getParentId());
     	
-    	commentMapper.increaseOrder(group, order);
+    	comment.setGroup(parentComment.getGroup());
+    	comment.setOrder(parentComment.getOrder() + 1);
+    	comment.setDepth(parentComment.getDepth() + 1);
     	
-    	comment.setGroup(group);
-    	comment.setOrder(order + 1);
-    	comment.setDepth(depth + 1);
+    	commentMapper.increaseOrder(parentComment.getGroup(), parentComment.getOrder());
     	
     	commentMapper.insertReply(comment);
     }
@@ -62,7 +59,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void deleteComment(int cId) {
-        commentMapper.deleteComment(cId);
+        commentMapper.deleteCommentAndRepl(cId);
+        commentMapper.deleteCommentById(cId);
     }
     
     @Override

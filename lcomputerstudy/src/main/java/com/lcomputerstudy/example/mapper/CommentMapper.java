@@ -32,7 +32,8 @@ public interface CommentMapper {
     public List<Comment> ListReplies(int parentId);
     
     // 댓글 개별 삭제
-    public void deleteComment(int cId);
+    public void deleteCommentById(int cId);
+    public void deleteCommentAndRepl(int cId);
     
     // 게시물 삭제시 해당 bId에 있는 댓글들 전부 삭제
     public void deleteCommentByBid(int bId);

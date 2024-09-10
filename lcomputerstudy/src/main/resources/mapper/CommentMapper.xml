@@ -55,6 +55,7 @@
 	<!-- 댓글 조회 -->
 	<select id="ListCommentsByBid" parameterType="int" resultMap="CommentMap">
 		SELECT * FROM lc_comment WHERE b_id = #{bId}
+		ORDER BY `group`, `order`
 	</select>
 	
 	<!-- 대댓글 조회 -->
@@ -68,8 +69,22 @@
 	</select>	
 	
 	<!-- 댓글 개별 삭제 -->
-	<delete id="deleteComment" parameterType="int">
-		DELETE FROM lc_comment WHERE c_id = #{cId}
+	<delete id="deleteCommentAndRepl" parameterType="int">
+		<!-- 상위댓글 지울시 대댓글우선삭제 -->
+		DELETE FROM lc_comment 
+		WHERE c_id IN (
+			SELECT c_id FROM lc_comment
+			WHERE `group` = (
+				SELECT `group` FROM lc_comment WHERE c_id = #{cId}
+			)
+			AND depth > 0
+		);
+	</delete>
+	
+	<delete id="deleteCommentById" parameterType="int">
+		<!-- 자신 댓글 삭제 -->
+		DELETE FROM lc_comment
+		WHERE c_id = #{cId};
 	</delete>
 	
 	<!-- 댓글 전체 삭제(게시글 삭제할때 사용) -->

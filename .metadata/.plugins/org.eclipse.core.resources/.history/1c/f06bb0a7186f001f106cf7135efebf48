@@ -1,0 +1,61 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
+<div style="margin-left: ${comment.depth * 50}px;">
+	<p><strong>작성자 </strong>${comment.cWriter}</p>
+	<p><strong>내용 </strong>${comment.cContent}</p>
+	<p><strong>작성일시 </strong>${comment.cDatetime}</p>
+    	
+   	<!-- 본인 댓글만 수정버튼표시 -->
+   	<sec:authorize access="isAuthenticated()">
+   		<c:if test="${principal.username == comment.username }">
+   			<!-- 수정 버튼 클릭시 수정폼 스크립트로 -->
+   			<button type="button" onclick="showEditForm(${comment.cId}, '${comment.cContent }')">수정</button>
+   			<!-- 수정되어서 DB에 업데이트 -->
+   			<div id="editForm_${comment.cId }" style="display:none;">
+    			<form action="${updateCommentUrl }" method="post">
+    				<input type="hidden" name="cId" value="${comment.cId }"/>
+    				<textarea name="cContent">${comment.cContent}</textarea>
+    				<button type="submit">수정 완료</button>
+    			</form>
+   			</div>
+   		</c:if>
+   	</sec:authorize>
+       <!-- ADMIN 권한일 때 모든 댓글에 삭제 버튼 표시 -->
+       <sec:authorize access="hasRole('ROLE_ADMIN')">
+           <form action="${deleteCommentUrl }" method="post">
+               <input type="hidden" name="cId" value="${comment.cId}" />
+               <button type="submit">삭제</button>
+           </form>
+       </sec:authorize>
+       <!-- USER 권한일 때 본인의 댓글에만 삭제 버튼 표시 -->
+       <sec:authorize access="hasRole('ROLE_USER')">
+       	<c:if test="${principal.username == comment.username}">
+            <form action="${deleteCommentUrl }" method="post">
+                <input type="hidden" name="cId" value="${comment.cId}" />
+                <button type="submit">삭제</button>
+            </form>
+           </c:if>
+       </sec:authorize>
+       <!-- 대댓글 작성 폼 -->
+       <button type="button" onclick="showReplyForm(${comment.cId })">답글</button>
+    <div id="replyForm_${comment.cId}" style="display:none;">
+       	<form action="${addCommentUrl}" method="post">
+       		<input type="hidden" name="uId" value="${principal.username }">
+       		<input type="hidden" name="parentId" value="${comment.cId }">
+       		<input type="hidden" name="group" value="${comment.group }">
+       		<input type="hidden" name="order" value="${comment.order + 1 }">
+       		<input type="hidden" name="depth" value="${comment.depth + 1 }">
+       		<textarea name="cContent" rows="2" cols="50"></textarea>
+       		<button type="submit">작성</button>
+       	</form>
+    </div>
+  		<!-- 대댓글 표시 -->
+  		<c:forEach var="reply" items="${comment.replies }">
+  			<c:import url="/comment.jsp">
+  				<c:param name="comment" value="${reply}"/>
+  			</c:import>
+  		</c:forEach>
+  	</div>
