@@ -8,6 +8,7 @@
 <head>
 <meta charset="UTF-8">
 <title>게시물 조회</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script>
 	function confirmDelete(bId) {
 		var check = confirm("해당 게시물을 정말 삭제합니까?");
@@ -116,7 +117,7 @@
     	<c:param name="searchKeyword" value="${searchparam.searchKeyword }"/>
     </c:url>
     <c:forEach var="comment" items="${comments}">
-    	<div style="margin-left: ${comment.depth * 50}px;">
+    	<div style="margin-left: ${comment.depth * 50}px;" class="commentList">
     		<p><strong>작성자 </strong>${comment.cWriter}</p>
     		<p><strong>내용 </strong>${comment.cContent}</p>
     		<p><strong>작성일시 </strong>${comment.cDatetime}</p>
@@ -155,13 +156,20 @@
         </sec:authorize>
         <!-- 대댓글 작성 폼 -->
         <button type="button" onclick="showReplyForm(${comment.cId })">답글</button>
+        <!-- <button class="reComment">대댓글</button>
+        <div style="display: none;">
+        	<textarea cols="80" rows="2"></textarea>
+        	<button type="button" class="cancelComment">취소</button>
+        	<button type="button" class="regComment" bOrder="${comment.order }">등록</button>
+        </div> -->
+        
         <div id="replyForm_${comment.cId}" style="display:none;">
         	<form action="${addCommentUrl}" method="post">
         		<input type="hidden" name="uId" value="${principal.username }">
         		<input type="hidden" name="parentId" value="${comment.cId }">
         		<input type="hidden" name="group" value="${comment.group }">
         		<input type="hidden" name="order" value="${comment.order }">
-        		<input type="hidden" name="depth" value="${comment.depth + 1 }">
+        		<input type="hidden" name="depth" value="${comment.depth }">
         		<textarea name="cContent" rows="2" cols="50"></textarea>
         		<button type="submit">작성</button>
         	</form>
@@ -178,5 +186,36 @@
 	    	<a href="/list?page=${page}&searchOption=${searchparam.searchOption}&searchKeyword=${searchparam.searchKeyword}">목록으로 돌아가기</a>
 	    </c:otherwise>
 	</c:choose>
+	
+	<!-- 
+	<div id="commentList2">
+	asdfasdfs
+	</div>  -->
+	
+	<script>
+	//$('.commentList').css('border', '1px solid red');
+	
+	/*$(document).on('click', '.reComment', function () {
+		$(this).next().css('display', '');
+	});
+	
+	$('.cancelComment').on('click', function () {
+		$(this).parent().css('display', 'none');
+	});
+	
+	$('.regComment').on('click', function () {
+		let order = $(this).attr('bOrder');
+		console.log('order', order);
+		
+		$.ajax({
+	    	method: "POST",
+	    	url: "/ajtest",
+	    	data: { bOrder: order}
+		})
+		.done(function( data ) {
+			$('#commentList2').html(data);
+		});
+	});*/
+	</script>
 </body>
 </html>

@@ -351,4 +351,10 @@ public class Controller {
 	public String denied(Model model) {
 	   return "/denied";
 	}
+	
+	
+	@PostMapping("/ajtest")
+	public String ajTest() {  
+	   return "/user_info";
+	}
 }

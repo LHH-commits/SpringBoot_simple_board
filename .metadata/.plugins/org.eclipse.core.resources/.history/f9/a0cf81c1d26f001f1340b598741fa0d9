@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lcomputerstudy.example.mapper.CommentMapper">
+
+	<resultMap id="CommentMap" type="Comment">
+		<id property="cId" column="c_id"/>
+		<result property="cContent" column="c_content"/>
+		<result property="cWriter" column="c_writer"/>
+		<result property="cDatetime" column="c_datetime"/>
+		<result property="bId" column="b_id"/>
+		<result property="username" column="u_id"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="group" column="group"/>
+		<result property="order" column="order"/>
+		<result property="depth" column="depth"/>
+	</resultMap>
+	
+	<!-- 댓글 작성 -->
+	<insert id="addComment" parameterType="Comment">
+		INSERT INTO lc_comment (b_id, c_content, c_writer, u_id, parent_id, `order`, depth)
+		VALUES (#{bId}, #{cContent}, #{cWriter}, #{username}, #{parentId}, 1, 0);
+		<selectKey keyProperty="cId" resultType="int" order="AFTER">
+			SELECT LAST_INSERT_ID();
+		</selectKey>
+	</insert>
+	
+	<!-- c_id를 그룹에 셋 -->
+	<update id="updateGroup" parameterType="int">
+		UPDATE 	lc_comment
+		SET		`group` = #{cId}
+		WHERE	c_id = #{cId}
+	</update>
+	
+	<!-- 대댓글 작성 -->
+	<!-- 상위 댓글의 정보를 가져옴 -->
+	<select id="getCommentGOD" parameterType="int" resultType="map">
+		SELECT `group`, `order`, `depth`
+		FROM	lc_comment
+		WHERE	c_id = #{parentId};
+	</select>
+		
+	<!-- 댓글 달때마다 order값 증가 -->
+	<update id="increaseOrder">
+		UPDATE lc_comment
+		SET		`order` = `order` + 1
+		WHERE	`group` = #{group} AND `order` > #{order};
+	</update>
+		
+	<!-- 대댓글 추가 -->
+	<insert id="insertReply" parameterType="Comment">
+		INSERT INTO lc_comment (b_id, c_content, c_writer, u_id, parent_id, `group`, `order`, depth)
+		VALUES (#{bId}, #{cContent}, #{cWriter}, #{username}, #{parentId}, #{group}, #{order}, #{depth} + 1);
+	</insert>
+	
+	<!-- 댓글 조회 -->
+	<select id="ListCommentsByBid" parameterType="int" resultMap="CommentMap">
+		SELECT * FROM lc_comment WHERE b_id = #{bId}
+		ORDER BY `group`, depth, `order` ASC, c_datetime DESC
+	</select>
+	
+	<!-- 대댓글 조회 -->
+	<select id="ListReplies" parameterType="int" resultMap="CommentMap">
+		SELECT * FROM lc_comment WHERE parent_id = #{parentId}
+	</select>
+	
+	<!-- 개인 댓글 정보 가져오기 -->
+	<select id="getCommentById" parameterType="int" resultMap="CommentMap">
+		SELECT * FROM lc_comment WHERE c_id = #{cId}
+	</select>	
+	
+	<!-- 댓글 개별 삭제 -->
+	<delete id="deleteCommentAndRepl" parameterType="int">
+		<!-- 상위댓글 지울시 대댓글우선삭제 -->
+		DELETE FROM lc_comment 
+		WHERE `group` = (SELECT `group` FROM lc_comment WHERE c_id = #{cId})
+    	AND (
+     	   c_id = #{cId} OR depth > (SELECT depth FROM lc_comment WHERE c_id = #{cId})
+    	);
+	</delete>
+	
+	<delete id="deleteCommentById" parameterType="int">
+		<!-- 자신 댓글 삭제 -->
+		DELETE FROM lc_comment
+		WHERE c_id = #{cId};
+	</delete>
+	
+	<!-- 댓글 전체 삭제(게시글 삭제할때 사용) -->
+	<delete id="deleteCommentByBid" parameterType="int">
+		DELETE FROM lc_comment WHERE b_id = #{bId}
+	</delete>
+	
+	<!-- 댓글 수정 -->
+	<update id="updateComment" parameterType="Comment">
+		UPDATE 	lc_comment
+		SET		c_content = #{cContent},
+				c_datetime = NOW()
+		WHERE	c_id = #{cId}
+	</update>
+
+</mapper>

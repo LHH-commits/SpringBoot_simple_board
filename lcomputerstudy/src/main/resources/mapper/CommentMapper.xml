@@ -43,19 +43,20 @@
 	<update id="increaseOrder">
 		UPDATE lc_comment
 		SET		`order` = `order` + 1
-		WHERE	`group` = #{group} AND `order` > #{order};
+		WHERE	`group` = #{group}
+			AND `order` > #{order}
 	</update>
 		
 	<!-- 대댓글 추가 -->
 	<insert id="insertReply" parameterType="Comment">
 		INSERT INTO lc_comment (b_id, c_content, c_writer, u_id, parent_id, `group`, `order`, depth)
-		VALUES (#{bId}, #{cContent}, #{cWriter}, #{username}, #{parentId}, #{group}, #{order}, #{depth} + 1);
+		VALUES (#{bId}, #{cContent}, #{cWriter}, #{username}, #{parentId}, #{group}, #{order}, #{depth});
 	</insert>
 	
 	<!-- 댓글 조회 -->
 	<select id="ListCommentsByBid" parameterType="int" resultMap="CommentMap">
 		SELECT * FROM lc_comment WHERE b_id = #{bId}
-		ORDER BY `group`, depth ASC, `order` DESC
+		ORDER BY `order`
 	</select>
 	
 	<!-- 대댓글 조회 -->
