@@ -19,6 +19,8 @@ public interface CommentMapper {
     // 상위 댓글의 GOD 가져오기
     public Map<String, Object> getCommentGOD(int parentId);
     
+    public int getMaxOrder(int group);
+    
     // order값 증가
     public void increaseOrder(@Param("group") int group, @Param("order") int order);
     

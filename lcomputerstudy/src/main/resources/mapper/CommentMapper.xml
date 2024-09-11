@@ -56,7 +56,7 @@
 	<!-- 댓글 조회 -->
 	<select id="ListCommentsByBid" parameterType="int" resultMap="CommentMap">
 		SELECT * FROM lc_comment WHERE b_id = #{bId}
-		ORDER BY `order`
+		ORDER BY `group`, `order`
 	</select>
 	
 	<!-- 대댓글 조회 -->
