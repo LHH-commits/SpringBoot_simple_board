@@ -14,11 +14,11 @@
 		var check = confirm("해당 게시물을 정말 삭제합니까?");
 		
 		if(check) {
-			var form = document.createElement("form");
+			const form = document.createElement("form");
 			form.method = "POST";
 			form.action = "/deleteBoard";
 			
-			var input = document.createElement("input");
+			const input = document.createElement("input");
 			input.type = "Integer";
 			input.name = "bId";
 			input.value = bId;
@@ -40,11 +40,11 @@
 		textarea.value = currentContent;
 		form.style.display = form.style.display === 'none' ? 'block' : 'none';
 	}
-	
+	/*
 	function showReplyForm(commentId) {
 		var replyForm = document.getElementById("replyForm_" + commentId);
 		replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
-	}
+	} */
 </script>
 </head>
 <body>
@@ -155,25 +155,25 @@
             </c:if>
         </sec:authorize>
         <!-- 대댓글 작성 폼 -->
-        <button type="button" onclick="showReplyForm(${comment.cId })">답글</button>
-        <!-- <button class="reComment">대댓글</button>
+        <!-- <button type="button" onclick="showReplyForm(${comment.cId })">답글</button> -->
+        <button class="replyForm">답글</button>
         <div style="display: none;">
         	<textarea cols="80" rows="2"></textarea>
-        	<button type="button" class="cancelComment">취소</button>
-        	<button type="button" class="regComment" bOrder="${comment.order }">등록</button>
-        </div> -->
+        	<button type="button" class="cancelReply">취소</button>
+        	<button type="button" class="addReply">등록</button>
+        </div>
         
-        <div id="replyForm_${comment.cId}" style="display:none;">
-        	<form action="${addCommentUrl}" method="post">
-        		<input type="hidden" name="uId" value="${principal.username }">
-        		<input type="hidden" name="parentId" value="${comment.cId }">
-        		<input type="hidden" name="group" value="${comment.group }">
-        		<input type="hidden" name="order" value="${comment.order }">
-        		<input type="hidden" name="depth" value="${comment.depth }">
-        		<textarea name="cContent" rows="2" cols="50"></textarea>
-        		<button type="submit">작성</button>
-        	</form>
-    		</div>
+	    <!--     <div id="replyForm_${comment.cId}" style="display:none;">
+	        	<form action="${addCommentUrl}" method="post">
+	        		<input type="hidden" name="uId" value="${principal.username }">
+	        		<input type="hidden" name="parentId" value="${comment.cId }">
+	        		<input type="hidden" name="group" value="${comment.group }">
+	        		<input type="hidden" name="order" value="${comment.order }">
+	        		<input type="hidden" name="depth" value="${comment.depth }">
+	        		<textarea name="cContent" rows="2" cols="50"></textarea>
+	        		<button type="submit">작성</button>
+	        	</form>
+    		</div> -->
     	</div>
     	<br>
 	</c:forEach>
@@ -193,12 +193,40 @@
 	</div>  -->
 	
 	<script>
-	//$('.commentList').css('border', '1px solid red');
-	
-	/*$(document).on('click', '.reComment', function () {
-		$(this).next().css('display', '');
+	$(function(){
+		// 답글버튼을 눌렀을때 대댓글폼 보이기
+		$('.replyForm').on('click', function(){
+			$(this).next('div').toggle();
+		});
+		
+		// 취소 버튼 눌렀을때 폼 숨기기
+		$('.cancelReply').on('click', function(){
+			$(this).parent().hide();
+		});
+		
+		// 등록버튼 클릭시
+		$('.addReply').on('click', function(){
+			const $form = $(this).closest('div');
+			const replyContent = $form.find('textarea').val();
+			
+			$.ajax({
+				type: "POST",
+				url: "/addComment",
+				data: {
+			    	bId: '${board.bId}',
+			    	page: '${page}',
+			    	searchOption: '${searchparam.searchOption}',
+			    	searchKeyword: '${searchparam.searchKeyword}',
+					cContent: replyContent,
+					parentId: parseInt('${comment.cId}') || 0,
+					group: parseInt('${comment.group}') || 0,
+					order: parseInt('${comment.order}') || 0,
+					depth: parseInt('${comment.depth}') || 0
+				}
+			});
+		});
 	});
-	
+	/*
 	$('.cancelComment').on('click', function () {
 		$(this).parent().css('display', 'none');
 	});
