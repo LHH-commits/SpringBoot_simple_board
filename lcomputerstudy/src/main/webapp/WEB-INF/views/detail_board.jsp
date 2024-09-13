@@ -75,7 +75,7 @@
     </sec:authorize>
     
     <!-- 댓글 작성 폼 -->
-    <h2>댓글 작성</h2>
+    <%-- <h2>댓글 작성</h2>
     <c:url value="/addComment" var="addCommentUrl">
     	<c:param name="bId" value="${board.bId }"/>
     	<c:param name="page" value="${page }"/>
@@ -87,13 +87,13 @@
     	<input type="hidden" name="uId" value="${principal.username }">
     	<input type="hidden" name="group" value="0">
     	<input type="hidden" name="order" value="1">
-    	<input type="hidden" name="depth" value="0">
+    	<input type="hidden" name="depth" value="0"> --%>
     	<div>
     		<label for="cContent" id="commentForm">내용:</label>
     		<textarea id="cContent" name="cContent" rows="4" cols="50"></textarea><br>
     		<button type="button" id="regComment">댓글 작성</button>
     	</div>
-    </form>
+    <!-- </form> -->
     
     <!-- 댓글 목록 -->
     <h2>댓글</h2>
@@ -168,17 +168,21 @@
 	</c:choose>
 	
 	<script>
+	function loadComments() {
+		$.ajax({
+			url: '/commentList',
+			type: 'GET',
+			data: {
+				bId: '${board.bId}',
+				page: '${page}'
+			},
+			success: function(response) {
+				$('#commentSection').html(response);
+			}
+		})
+	}
+	
 	$(function() {
-		function loadComments() {
-			$.ajax({
-				url: '/commentList',
-				type: 'GET',
-				data: {bId: '${board.bId}'},
-				success: function(response) {
-					$('#commentSection').html(response);
-				}
-			})
-		}
 		
 		loadComments();
 		
@@ -222,7 +226,7 @@
 			});
 		});
 		
-		$('#regComment').on('click', function()) {
+		$('#regComment').on('click', function() {
 			const $form = $(this).closest('div');
 			const commentContent = $form.find('textarea').val();
 			
@@ -241,10 +245,10 @@
 			    	depth: 0
 				},
 				success: function() {
-					locadComments();
+					loadComments();
 				}
 			});
-		}
+		});
 	});
 	</script>
 	<!-- 댓글 목록이 업데이트될 div -->

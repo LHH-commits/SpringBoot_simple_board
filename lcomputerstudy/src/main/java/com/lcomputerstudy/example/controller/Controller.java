@@ -98,9 +98,12 @@ public class Controller {
 	}
 	
 	@GetMapping("/commentList")
-	public String getCommentList(@RequestParam("bId") int bId, Model model) {
+	public String getCommentList(@RequestParam("bId") int bId, 
+								@RequestParam(value = "page", defaultValue = "1") int page,
+								Model model) {
 		List<Comment> comments = commentservice.getAllComments(bId);
 		model.addAttribute("comments", comments);
+		model.addAttribute("page", page);
 		return "/commentList";
 	}
 	
