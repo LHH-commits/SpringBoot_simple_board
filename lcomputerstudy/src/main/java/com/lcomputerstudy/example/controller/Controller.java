@@ -97,6 +97,13 @@ public class Controller {
 		return "/detail_board";
 	}
 	
+	@GetMapping("/commentList")
+	public String getCommentList(@RequestParam("bId") int bId, Model model) {
+		List<Comment> comments = commentservice.getAllComments(bId);
+		model.addAttribute("comments", comments);
+		return "/commentList";
+	}
+	
 	// 댓글 추가
 	@PostMapping("/addComment")
 	public String addComment(@ModelAttribute Comment comment, Authentication authentication,

@@ -40,11 +40,6 @@
 		textarea.value = currentContent;
 		form.style.display = form.style.display === 'none' ? 'block' : 'none';
 	}
-	/*
-	function showReplyForm(commentId) {
-		var replyForm = document.getElementById("replyForm_" + commentId);
-		replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
-	} */
 </script>
 </head>
 <body>
@@ -94,11 +89,9 @@
     	<input type="hidden" name="order" value="1">
     	<input type="hidden" name="depth" value="0">
     	<div>
-    		<label for="cContent">내용:</label>
-    		<textarea id="cContent" name="cContent" rows="4" cols="50"></textarea>
-    	</div>
-    	<div>
-    		<button type="submit">댓글 작성</button>
+    		<label for="cContent" id="commentForm">내용:</label>
+    		<textarea id="cContent" name="cContent" rows="4" cols="50"></textarea><br>
+    		<button type="button" id="regComment">댓글 작성</button>
     	</div>
     </form>
     
@@ -155,25 +148,12 @@
             </c:if>
         </sec:authorize>
         <!-- 대댓글 작성 폼 -->
-        <!-- <button type="button" onclick="showReplyForm(${comment.cId })">답글</button> -->
-        <button class="replyForm">답글</button>
-        <div style="display: none;">
-        	<textarea cols="80" rows="2"></textarea>
-        	<button type="button" class="cancelReply">취소</button>
-        	<button type="button" class="addReply">등록</button>
-        </div>
-        
-	    <!--     <div id="replyForm_${comment.cId}" style="display:none;">
-	        	<form action="${addCommentUrl}" method="post">
-	        		<input type="hidden" name="uId" value="${principal.username }">
-	        		<input type="hidden" name="parentId" value="${comment.cId }">
-	        		<input type="hidden" name="group" value="${comment.group }">
-	        		<input type="hidden" name="order" value="${comment.order }">
-	        		<input type="hidden" name="depth" value="${comment.depth }">
-	        		<textarea name="cContent" rows="2" cols="50"></textarea>
-	        		<button type="submit">작성</button>
-	        	</form>
-    		</div> -->
+	        <button class="replyForm">답글</button>
+	        <div style="display: none;">
+	        	<textarea cols="80" rows="2"></textarea>
+	        	<button type="button" class="cancelReply">취소</button>
+	        	<button type="button" class="addReply">등록</button>
+	        </div>
     	</div>
     	<br>
 	</c:forEach>
@@ -187,13 +167,21 @@
 	    </c:otherwise>
 	</c:choose>
 	
-	<!-- 
-	<div id="commentList2">
-	asdfasdfs
-	</div>  -->
-	
 	<script>
-	$(function(){
+	$(function() {
+		function loadComments() {
+			$.ajax({
+				url: '/commentList',
+				type: 'GET',
+				data: {bId: '${board.bId}'},
+				success: function(response) {
+					$('#commentSection').html(response);
+				}
+			})
+		}
+		
+		loadComments();
+		
 		// 답글버튼을 눌렀을때 대댓글폼 보이기
 		$('.replyForm').on('click', function(){
 			$(this).next('div').toggle();
@@ -208,6 +196,10 @@
 		$('.addReply').on('click', function(){
 			const $form = $(this).closest('div');
 			const replyContent = $form.find('textarea').val();
+			const commentId = $(this).closest('.commentList').find('input[name="cId"]').val();
+			const commentGroup = $(this).closest('.commentList').find('input[name="group"]').val();
+			const commentOrder = $(this).closest('.commentList').find('input[name="order"]').val();
+			const commentDepth = $(this).closest('.commentList').find('input[name="depth"]').val();
 			
 			$.ajax({
 				type: "POST",
@@ -217,33 +209,45 @@
 			    	page: '${page}',
 			    	searchOption: '${searchparam.searchOption}',
 			    	searchKeyword: '${searchparam.searchKeyword}',
+			    	uId: '${principal.username }',
 					cContent: replyContent,
-					parentId: parseInt('${comment.cId}') || 0,
-					group: parseInt('${comment.group}') || 0,
-					order: parseInt('${comment.order}') || 0,
-					depth: parseInt('${comment.depth}') || 0
+					parentId: commentId,
+					group: commentGroup,
+					order: commentOrder,
+					depth: commentDepth
+				},
+				success: function() {
+					loadComments();
 				}
 			});
 		});
-	});
-	/*
-	$('.cancelComment').on('click', function () {
-		$(this).parent().css('display', 'none');
-	});
-	
-	$('.regComment').on('click', function () {
-		let order = $(this).attr('bOrder');
-		console.log('order', order);
 		
-		$.ajax({
-	    	method: "POST",
-	    	url: "/ajtest",
-	    	data: { bOrder: order}
-		})
-		.done(function( data ) {
-			$('#commentList2').html(data);
-		});
-	});*/
+		$('#regComment').on('click', function()) {
+			const $form = $(this).closest('div');
+			const commentContent = $form.find('textarea').val();
+			
+			$.ajax({
+				type: "POST",
+				url: "/addComment",
+				data: {
+					bId: '${board.bId}',
+			    	page: '${page}',
+			    	searchOption: '${searchparam.searchOption}',
+			    	searchKeyword: '${searchparam.searchKeyword}',
+			    	uId: '${principal.username }',
+			    	cContent: commentContent,
+			    	group: 0,
+			    	order: 1,
+			    	depth: 0
+				},
+				success: function() {
+					locadComments();
+				}
+			});
+		}
+	});
 	</script>
+	<!-- 댓글 목록이 업데이트될 div -->
+	<div id="commentSection"></div>
 </body>
 </html>
