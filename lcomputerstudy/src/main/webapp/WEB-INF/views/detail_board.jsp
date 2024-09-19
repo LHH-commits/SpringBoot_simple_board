@@ -34,12 +34,6 @@
 		}
 	}
 	
-	function showEditForm(commentId, currentContent) {
-		var form = document.getElementById('editForm_' + commentId);
-		var textarea = form.querySelector('textarea');
-		textarea.value = currentContent;
-		form.style.display = form.style.display === 'none' ? 'block' : 'none';
-	}
 </script>
 </head>
 <body>
@@ -75,82 +69,41 @@
     </sec:authorize>
     
     <!-- 댓글 작성 폼 -->
-    <%-- <h2>댓글 작성</h2>
-    <c:url value="/addComment" var="addCommentUrl">
-    	<c:param name="bId" value="${board.bId }"/>
-    	<c:param name="page" value="${page }"/>
-    	<c:param name="searchOption" value="${searchparam.searchOption }"/>
-    	<c:param name="searchKeyword" value="${searchparam.searchKeyword }"/>
-    </c:url>
-    
-    <form action="${addCommentUrl }" method="post">
-    	<input type="hidden" name="uId" value="${principal.username }">
-    	<input type="hidden" name="group" value="0">
-    	<input type="hidden" name="order" value="1">
-    	<input type="hidden" name="depth" value="0"> --%>
-    	<div>
-    		<label for="cContent" id="commentForm">내용:</label>
-    		<textarea id="cContent" name="cContent" rows="4" cols="50"></textarea><br>
-    		<button type="button" id="regComment">댓글 작성</button>
-    	</div>
+    <h2>댓글 작성</h2>
+   	<div>
+   		<label for="cContent" id="commentForm">내용:</label>
+   		<textarea id="cContent" name="cContent" rows="4" cols="50"></textarea><br>
+   		<button type="button" id="regComment">댓글 작성</button>
+   	</div>
     <!-- </form> -->
     
     <!-- 댓글 목록 -->
     <h2>댓글</h2>
-    <c:url value="/deleteComment" var="deleteCommentUrl">
-    	<c:param name="bId" value="${board.bId }"/>
-    	<c:param name="page" value="${page }"/>
-    	<c:param name="searchOption" value="${searchparam.searchOption }"/>
-    	<c:param name="searchKeyword" value="${searchparam.searchKeyword }"/>
-    </c:url>
-    <c:url value="/updateComment" var="updateCommentUrl">
-    	<c:param name="bId" value="${board.bId }"/>
-    	<c:param name="page" value="${page }"/>
-    	<c:param name="searchOption" value="${searchparam.searchOption }"/>
-    	<c:param name="searchKeyword" value="${searchparam.searchKeyword }"/>
-    </c:url>
+    
     <c:forEach var="comment" items="${comments}">
     	<div style="margin-left: ${comment.depth * 50}px;" class="commentList">
     		<p><strong>작성자 </strong>${comment.cWriter}</p>
     		<p><strong>내용 </strong>${comment.cContent}</p>
     		<p><strong>작성일시 </strong>${comment.cDatetime}</p>
     	
-    	
     	<!-- 본인 댓글만 수정버튼표시 -->
-    	<sec:authorize access="isAuthenticated()">
-    		<c:if test="${principal.username == comment.username }">
-    			<!-- 수정 버튼 클릭시 수정폼 스크립트로 -->
-    			<button type="button" onclick="showEditForm(${comment.cId}, '${comment.cContent }')">수정</button>
-    			<!-- 수정되어서 DB에 업데이트 -->
-    			<div id="editForm_${comment.cId }" style="display:none;">
-	    			<form action="${updateCommentUrl }" method="post">
-	    				<input type="hidden" name="cId" value="${comment.cId }"/>
-	    				<textarea name="cContent">${comment.cContent}</textarea>
-	    				<button type="submit">수정 완료</button>
-	    			</form>
-    			</div>
-    		</c:if>
-    	</sec:authorize>
+    	<button class="commentEditForm" data-comment-id="${comment.cId }" data-content="${comment.cContent }">수정</button>
+    	<div class="editForm_${comment.cId }" style="display:none;">
+    		<textarea cols="80" rows="3"></textarea>
+	        <button type="button" class="cancelEdit">취소</button>
+	        <button type="button" class="updateEdit">등록</button>
+    	</div>
+    	
         <!-- ADMIN 권한일 때 모든 댓글에 삭제 버튼 표시 -->
-        <sec:authorize access="hasRole('ROLE_ADMIN')">
-            <form action="${deleteCommentUrl }" method="post">
-                <input type="hidden" name="cId" value="${comment.cId}" />
-                <button type="submit">삭제</button>
-            </form>
-        </sec:authorize>
+        
         <!-- USER 권한일 때 본인의 댓글에만 삭제 버튼 표시 -->
-        <sec:authorize access="hasRole('ROLE_USER')">
-        	<c:if test="${principal.username == comment.username}">
-	            <form action="${deleteCommentUrl }" method="post">
-	                <input type="hidden" name="cId" value="${comment.cId}" />
-	                <button type="submit">삭제</button>
-	            </form>
-            </c:if>
-        </sec:authorize>
+        
+        <button class="deleteComment" data-comment-id="${comment.cId }">삭제</button>
+        
         <!-- 대댓글 작성 폼 -->
 	        <button class="replyForm">답글</button>
 	        <div style="display: none;">
-	        	<textarea cols="80" rows="2"></textarea>
+	        	<textarea cols="80" rows="3"></textarea>
 	        	<button type="button" class="cancelReply">취소</button>
 	        	<button type="button" class="addReply">등록</button>
 	        </div>
@@ -174,7 +127,12 @@
 			type: 'GET',
 			data: {
 				bId: '${board.bId}',
-				page: '${page}'
+		    	page: '${page}',
+		    	searchOption: '${searchparam.searchOption}',
+		    	searchKeyword: '${searchparam.searchKeyword}',
+		    	uId: '${principal.username }',
+		    	cId: '${comment.cId}',
+		    	cContent: '${comment.cContent}'
 			},
 			success: function(response) {
 				$('#commentSection').html(response);
@@ -187,17 +145,17 @@
 		loadComments();
 		
 		// 답글버튼을 눌렀을때 대댓글폼 보이기
-		$('.replyForm').on('click', function(){
+		$(document).on('click','.replyForm', function(){
 			$(this).next('div').toggle();
 		});
 		
 		// 취소 버튼 눌렀을때 폼 숨기기
-		$('.cancelReply').on('click', function(){
+		$(document).on('click', '.cancelReply', function(){
 			$(this).parent().hide();
 		});
 		
 		// 등록버튼 클릭시
-		$('.addReply').on('click', function(){
+		$(document).on('click', '.addReply', function(){
 			const $form = $(this).closest('div');
 			const replyContent = $form.find('textarea').val();
 			const commentId = $(this).closest('.commentList').find('input[name="cId"]').val();
@@ -226,7 +184,7 @@
 			});
 		});
 		
-		$('#regComment').on('click', function() {
+		$(document).on('click', '#regComment', function() {
 			const $form = $(this).closest('div');
 			const commentContent = $form.find('textarea').val();
 			
@@ -249,9 +207,63 @@
 				}
 			});
 		});
+		
+		$(document).on('click', '.commentEditForm', function(){
+			const commentId = $(this).data('comment-id');
+			const commentContent = $(this).data('content');
+			
+			const $commentEditForm = $('.editForm_' + commentId);
+			$commentEditForm.find('textarea').val(commentContent);
+			
+			$commentEditForm.toggle();
+		});
+		
+		// 수정취소버튼
+		$(document).on('click', '.cancelEdit', function(){
+			$(this).parent().hide();
+		});
+		
+		$(document).on('click', '.updateEdit', function(){
+			const $form = $(this).closest('div');
+			const updateContent = $form.find('textarea').val();
+			const commentId = $(this).closest('.commentList').find('input[name="cId"]').val();
+			
+			$.ajax({
+				type: "POST",
+				url: "/updateComment",
+				data: {
+					bId: '${board.bId}',
+			    	page: '${page}',
+			    	searchOption: '${searchparam.searchOption}',
+			    	searchKeyword: '${searchparam.searchKeyword}',
+			    	uId: '${principal.username }',
+			    	cContent: updateContent,
+			    	cId: commentId
+				},
+				success: function() {
+					loadComments();
+				}
+			});
+		});
+		
+		$(document).on('click', '.deleteComment', function(){
+			const commentId = $(this).data('comment-id');
+			
+			$.ajax({
+				type: "POST",
+				url: "/deleteComment",
+				data: {
+					bId: '${board.bId}',
+			    	cId: commentId
+				},
+				success: function() {
+					loadComments();
+				}
+			});
+		});
 	});
 	</script>
-	<!-- 댓글 목록이 업데이트될 div -->
+	<!-- 댓글 목록이 업데이트될 div (확인용) -->
 	<div id="commentSection"></div>
 </body>
 </html>

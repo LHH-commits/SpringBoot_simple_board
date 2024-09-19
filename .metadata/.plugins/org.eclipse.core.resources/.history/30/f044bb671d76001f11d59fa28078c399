@@ -1,0 +1,139 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
+<c:forEach var="comment" items="${comments}">
+    	<div style="margin-left: ${comment.depth * 50}px;" class="commentList">
+    		<p><strong>작성자 </strong>${comment.cWriter}</p>
+    		<p><strong>내용 </strong>${comment.cContent}</p>
+    		<p><strong>작성일시 </strong>${comment.cDatetime}</p>
+    		
+    		<c:url value="/deleteComment" var="deleteCommentUrl">
+    	<c:param name="bId" value="${board.bId }"/>
+    	<c:param name="page" value="${page }"/>
+    	<c:param name="searchOption" value="${searchparam.searchOption }"/>
+    	<c:param name="searchKeyword" value="${searchparam.searchKeyword }"/>
+    </c:url>
+    <c:url value="/updateComment" var="updateCommentUrl">
+    	<c:param name="bId" value="${board.bId }"/>
+    	<c:param name="page" value="${page }"/>
+    	<c:param name="searchOption" value="${searchparam.searchOption }"/>
+    	<c:param name="searchKeyword" value="${searchparam.searchKeyword }"/>
+    </c:url>
+	    	<!-- 본인 댓글만 수정버튼표시 -->
+	    	<sec:authorize access="isAuthenticated()">
+	    		<c:if test="${principal.username == comment.username }">
+	    			<!-- 수정 버튼 클릭시 수정폼 스크립트로 -->
+	    			<button type="button" onclick="showEditForm(${comment.cId}, '${comment.cContent }')">수정</button>
+	    			<!-- 수정되어서 DB에 업데이트 -->
+	    			<div id="editForm_${comment.cId }" style="display:none;">
+		    			<form action="${updateCommentUrl }" method="post">
+		    				<input type="hidden" name="cId" value="${comment.cId }"/>
+		    				<textarea name="cContent">${comment.cContent}</textarea>
+		    				<button type="submit">수정 완료</button>
+		    			</form>
+	    			</div>
+	    		</c:if>
+	    	</sec:authorize>
+	        <!-- ADMIN 권한일 때 모든 댓글에 삭제 버튼 표시 -->
+	        <sec:authorize access="hasRole('ROLE_ADMIN')">
+	            <form action="${deleteCommentUrl }" method="post">
+	                <input type="hidden" name="cId" value="${comment.cId}" />
+	                <button type="submit">삭제</button>
+	            </form>
+	        </sec:authorize>
+	        <!-- USER 권한일 때 본인의 댓글에만 삭제 버튼 표시 -->
+	        <sec:authorize access="hasRole('ROLE_USER')">
+	        	<c:if test="${principal.username == comment.username}">
+		            <form action="${deleteCommentUrl }" method="post">
+		                <input type="hidden" name="cId" value="${comment.cId}" />
+		                <button type="submit">삭제</button>
+		            </form>
+	            </c:if>
+	        </sec:authorize>
+	        
+	        <button class="replyForm">답글</button>
+	        <div style="display: none;">
+	        	<textarea cols="80" rows="2"></textarea>
+	        	<button type="button" class="cancelReply">취소</button>
+	        	<button type="button" class="addReply">등록</button>
+	        </div>
+     	</div>
+</c:forEach>
+<script>
+	function showEditForm(commentId, currentContent) {
+		var form = document.getElementById('editForm_' + commentId);
+		var textarea = form.querySelector('textarea');
+		textarea.value = currentContent;
+		form.style.display = form.style.display === 'none' ? 'block' : 'none';
+	}
+	
+$(function() {
+		
+		loadComments();
+		
+		// 답글버튼을 눌렀을때 대댓글폼 보이기
+		$('.replyForm').on('click', function(){
+			$(this).next('div').toggle();
+		});
+		
+		// 취소 버튼 눌렀을때 폼 숨기기
+		$('.cancelReply').on('click', function(){
+			$(this).parent().hide();
+		});
+		
+		// 등록버튼 클릭시
+		$('.addReply').on('click', function(){
+			const $form = $(this).closest('div');
+			const replyContent = $form.find('textarea').val();
+			const commentId = $(this).closest('.commentList').find('input[name="cId"]').val();
+			const commentGroup = $(this).closest('.commentList').find('input[name="group"]').val();
+			const commentOrder = $(this).closest('.commentList').find('input[name="order"]').val();
+			const commentDepth = $(this).closest('.commentList').find('input[name="depth"]').val();
+			
+			$.ajax({
+				type: "POST",
+				url: "/addComment",
+				data: {
+			    	bId: '${board.bId}',
+			    	page: '${page}',
+			    	searchOption: '${searchparam.searchOption}',
+			    	searchKeyword: '${searchparam.searchKeyword}',
+			    	uId: '${principal.username }',
+					cContent: replyContent,
+					parentId: commentId,
+					group: commentGroup,
+					order: commentOrder,
+					depth: commentDepth
+				},
+				success: function() {
+					loadComments();
+				}
+			});
+		});
+		
+		$('#regComment').on('click', function() {
+			const $form = $(this).closest('div');
+			const commentContent = $form.find('textarea').val();
+			
+			$.ajax({
+				type: "POST",
+				url: "/addComment",
+				data: {
+					bId: '${board.bId}',
+			    	page: '${page}',
+			    	searchOption: '${searchparam.searchOption}',
+			    	searchKeyword: '${searchparam.searchKeyword}',
+			    	uId: '${principal.username }',
+			    	cContent: commentContent,
+			    	group: 0,
+			    	order: 1,
+			    	depth: 0
+				},
+				success: function() {
+					loadComments();
+				}
+			});
+		});
+</script>
