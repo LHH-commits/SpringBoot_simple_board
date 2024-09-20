@@ -5,30 +5,39 @@
 
 <sec:authentication property="principal" var="principal"/>
 
-<c:forEach var="comment" items="${comments}">
-    <div style="margin-left: ${comment.depth * 50}px;" class="commentList">
-    	<p><strong>작성자 </strong>${comment.cWriter}</p>
-    	<p><strong>내용 </strong>${comment.cContent}</p>
-    	<p><strong>작성일시 </strong>${comment.cDatetime}</p>
-    		
-	   	<!-- 본인 댓글만 수정버튼표시 -->
-	   	<button class="commentEditForm" data-comment-id="${comment.cId }" data-content="${comment.cContent }">수정</button>
-    	<div class="editForm_${comment.cId }" style="display:none;">
-    		<textarea cols="80" rows="3"></textarea>
-	        <button type="button" class="cancelEdit">취소</button>
-	        <button type="button" class="updateEdit">등록</button>
-    	</div>
-	    <!-- ADMIN 권한일 때 모든 댓글에 삭제 버튼 표시 -->
-	   
-	    <!-- USER 권한일 때 본인의 댓글에만 삭제 버튼 표시 -->
-	    
-	    <button class="deleteComment" data-comment-id="${comment.cId }">삭제</button>
-	    
-	    <button class="replyForm">답글</button>
-        <div style="display: none;">
-        	<textarea cols="80" rows="2"></textarea>
-        	<button type="button" class="cancelReply">취소</button>
-        	<button type="button" class="addReply">등록</button>
-        </div>
-  	</div>
-</c:forEach>
+<div id="commentList">
+	<c:forEach var="comment" items="${comments}">
+	    <div style="margin-left: ${comment.depth * 50}px;" class="commentBox">
+	    	<p><strong>작성자 </strong>${comment.cWriter}</p>
+	    	<p><strong>내용 </strong>${comment.cContent}</p>
+	    	<p><strong>작성일시 </strong>${comment.cDatetime}</p>
+	    	<input type="hidden" name="group" value="${comment.group}">
+			<input type="hidden" name="order" value="${comment.order}">
+			<input type="hidden" name="depth" value="${comment.depth}">
+	    		
+		   	<!-- 본인 댓글만 수정버튼표시 -->
+		   	<sec:authorize access="isAuthenticated()">
+		   		<c:if test="${principal.username == comment.username}">
+				   	<button class="commentEditForm" cId="${comment.cId }" cContent="${comment.cContent }">수정</button>
+			    	<div class="editForm" style="display:none;">
+			    		<textarea cols="80" rows="3"></textarea>
+				        <button type="button" class="cancelEdit">취소</button>
+				        <button type="button" class="updateEdit" cId="${comment.cId }">등록</button>
+			    	</div>
+		    	</c:if>
+	    	</sec:authorize>
+		    <!-- ADMIN 권한일 때 모든 댓글에 삭제 버튼 표시 -->
+		   <sec:authorize access="hasRole('ROLE_ADMIN') or (hasRole('ROLE_USER') and principal.username == #comment.username)">
+		    <!-- USER 권한일 때 본인의 댓글에만 삭제 버튼 표시 -->
+		    	<button class="deleteComment" data-comment-id="${comment.cId }">삭제</button>
+		    </sec:authorize>
+		    <button class="replyForm">답글</button>
+	        <div style="display: none;">
+	        	<textarea cols="80" rows="2"></textarea>
+	        	<button type="button" class="cancelReply">취소</button>
+	        	<button type="button" class="addReply" cId="${comment.cId }"
+	        	group="${comment.group}" order="${comment.order}" depth="${comment.depth}">등록</button>
+	        </div>
+	  	</div>
+	</c:forEach>
+</div>

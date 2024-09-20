@@ -9,6 +9,8 @@
 <meta charset="UTF-8">
 <title>게시물 조회</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script>
 	function confirmDelete(bId) {
 		var check = confirm("해당 게시물을 정말 삭제합니까?");
@@ -47,12 +49,12 @@
     </div>
     <sec:authentication property="principal" var="principal"/>
     <!-- 확인용 코드 -->
-    <p>작성자: ${user.username}</p>
+    <p>작성자: ${board.user.username}</p>
 	<p>로그인 사용자: ${principal.username}</p>
     <!-- 수정 버튼 권한 -->
     <!-- 현재 로그인한 u_id가 작성자 u_id가 같을때 수정버튼이 뜬다 -->
     <sec:authorize access="isAuthenticated()">
-    	<c:if test="${user.username == principal.username}">
+    	<c:if test="${board.user.username == principal.username}">
     		<button type="button" onclick="location.href='/editBoard?bId=${board.bId}&page=${page}'">수정</button>
     	</c:if>
     </sec:authorize>
@@ -63,7 +65,7 @@
     </sec:authorize>
     <!-- 관리자 권한을 가지고 있지 않다면 현재 로그인한 u_id가 작성자 u_id가 같을때 버튼이 뜬다 -->
     <sec:authorize access="!hasRole('ROLE_ADMIN')">
-        <c:if test="${user.username == principal.username}">
+        <c:if test="${board.user.username == principal.username}">
             <button type="button" onclick="confirmDelete(${board.bId})">삭제</button>
         </c:if>
     </sec:authorize>
@@ -75,41 +77,12 @@
    		<textarea id="cContent" name="cContent" rows="4" cols="50"></textarea><br>
    		<button type="button" id="regComment">댓글 작성</button>
    	</div>
-    <!-- </form> -->
     
     <!-- 댓글 목록 -->
     <h2>댓글</h2>
     
-    <c:forEach var="comment" items="${comments}">
-    	<div style="margin-left: ${comment.depth * 50}px;" class="commentList">
-    		<p><strong>작성자 </strong>${comment.cWriter}</p>
-    		<p><strong>내용 </strong>${comment.cContent}</p>
-    		<p><strong>작성일시 </strong>${comment.cDatetime}</p>
-    	
-    	<!-- 본인 댓글만 수정버튼표시 -->
-    	<button class="commentEditForm" data-comment-id="${comment.cId }" data-content="${comment.cContent }">수정</button>
-    	<div class="editForm_${comment.cId }" style="display:none;">
-    		<textarea cols="80" rows="3"></textarea>
-	        <button type="button" class="cancelEdit">취소</button>
-	        <button type="button" class="updateEdit">등록</button>
-    	</div>
-    	
-        <!-- ADMIN 권한일 때 모든 댓글에 삭제 버튼 표시 -->
-        
-        <!-- USER 권한일 때 본인의 댓글에만 삭제 버튼 표시 -->
-        
-        <button class="deleteComment" data-comment-id="${comment.cId }">삭제</button>
-        
-        <!-- 대댓글 작성 폼 -->
-	        <button class="replyForm">답글</button>
-	        <div style="display: none;">
-	        	<textarea cols="80" rows="3"></textarea>
-	        	<button type="button" class="cancelReply">취소</button>
-	        	<button type="button" class="addReply">등록</button>
-	        </div>
-    	</div>
-    	<br>
-	</c:forEach>
+	<!-- 댓글 목록이 업데이트될 div -->
+	<div id="commentSection"></div>
 	
     <c:choose>
 	    <c:when test="${empty searchparam.searchOption && empty searchparam.searchKeyword}">
@@ -156,12 +129,12 @@
 		
 		// 등록버튼 클릭시
 		$(document).on('click', '.addReply', function(){
+			const cId = $(this).attr('cId');
+			const group = $(this).attr('group');
+			const order = $(this).attr('order');
+			const depth = $(this).attr('depth');
 			const $form = $(this).closest('div');
 			const replyContent = $form.find('textarea').val();
-			const commentId = $(this).closest('.commentList').find('input[name="cId"]').val();
-			const commentGroup = $(this).closest('.commentList').find('input[name="group"]').val();
-			const commentOrder = $(this).closest('.commentList').find('input[name="order"]').val();
-			const commentDepth = $(this).closest('.commentList').find('input[name="depth"]').val();
 			
 			$.ajax({
 				type: "POST",
@@ -173,10 +146,10 @@
 			    	searchKeyword: '${searchparam.searchKeyword}',
 			    	uId: '${principal.username }',
 					cContent: replyContent,
-					parentId: commentId,
-					group: commentGroup,
-					order: commentOrder,
-					depth: commentDepth
+					parentId: cId,
+					group: group,
+					order: order,
+					depth: depth
 				},
 				success: function() {
 					loadComments();
@@ -209,11 +182,11 @@
 		});
 		
 		$(document).on('click', '.commentEditForm', function(){
-			const commentId = $(this).data('comment-id');
-			const commentContent = $(this).data('content');
+			const cId = $(this).attr('cId');
+			const cContent = $(this).attr('cContent');
 			
-			const $commentEditForm = $('.editForm_' + commentId);
-			$commentEditForm.find('textarea').val(commentContent);
+			const $commentEditForm = $(this).closest('.commentBox').find('.editForm');
+			$commentEditForm.find('textarea').val(cContent);
 			
 			$commentEditForm.toggle();
 		});
@@ -226,7 +199,7 @@
 		$(document).on('click', '.updateEdit', function(){
 			const $form = $(this).closest('div');
 			const updateContent = $form.find('textarea').val();
-			const commentId = $(this).closest('.commentList').find('input[name="cId"]').val();
+			const commentId = $(this).attr('cId');
 			
 			$.ajax({
 				type: "POST",
@@ -236,7 +209,7 @@
 			    	page: '${page}',
 			    	searchOption: '${searchparam.searchOption}',
 			    	searchKeyword: '${searchparam.searchKeyword}',
-			    	uId: '${principal.username }',
+			    	uId: '${principal.username}',
 			    	cContent: updateContent,
 			    	cId: commentId
 				},
@@ -263,7 +236,6 @@
 		});
 	});
 	</script>
-	<!-- 댓글 목록이 업데이트될 div (확인용) -->
-	<div id="commentSection"></div>
+	
 </body>
 </html>

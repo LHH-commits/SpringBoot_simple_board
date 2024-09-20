@@ -1,0 +1,240 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>게시물 조회</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script>
+	function confirmDelete(bId) {
+		var check = confirm("해당 게시물을 정말 삭제합니까?");
+		
+		if(check) {
+			const form = document.createElement("form");
+			form.method = "POST";
+			form.action = "/deleteBoard";
+			
+			const input = document.createElement("input");
+			input.type = "Integer";
+			input.name = "bId";
+			input.value = bId;
+			
+			form.appendChild(input);
+			
+			document.body.appendChild(form);
+			form.submit();
+			
+			alert("삭제하였습니다");
+		} else {
+			return false;
+		}
+	}
+	
+</script>
+</head>
+<body>
+	<h1>게시물 상세</h1>
+	<div>
+        <p><strong>제목:</strong> ${board.bTitle}</p>
+        <p><strong>작성자:</strong> ${board.bWriter}</p>
+        <p><strong>작성일시:</strong> ${board.bDateTime}</p>
+        <p><strong>내용:</strong> ${board.bContent}</p>
+        <p><strong>조회수:</strong> ${board.bViews}</p>
+    </div>
+    <sec:authentication property="principal" var="principal"/>
+    <!-- 확인용 코드 -->
+    <p>작성자: ${user.username}</p>
+	<p>로그인 사용자: ${principal.username}</p>
+    <!-- 수정 버튼 권한 -->
+    <!-- 현재 로그인한 u_id가 작성자 u_id가 같을때 수정버튼이 뜬다 -->
+    <sec:authorize access="isAuthenticated()">
+    	<c:if test="${user.username == principal.username}">
+    		<button type="button" onclick="location.href='/editBoard?bId=${board.bId}&page=${page}'">수정</button>
+    	</c:if>
+    </sec:authorize>
+  	<!-- 삭제 버튼 권한 -->
+    <!-- 관리자 권한을 가지고 있다면 삭제버튼이 모든 게시물에 뜬다 -->
+    <sec:authorize access="hasRole('ROLE_ADMIN')">
+    	<button type="button" onclick="confirmDelete(${board.bId})">삭제</button>
+    </sec:authorize>
+    <!-- 관리자 권한을 가지고 있지 않다면 현재 로그인한 u_id가 작성자 u_id가 같을때 버튼이 뜬다 -->
+    <sec:authorize access="!hasRole('ROLE_ADMIN')">
+        <c:if test="${user.username == principal.username}">
+            <button type="button" onclick="confirmDelete(${board.bId})">삭제</button>
+        </c:if>
+    </sec:authorize>
+    
+    <!-- 댓글 작성 폼 -->
+    <h2>댓글 작성</h2>
+   	<div>
+   		<label for="cContent" id="commentForm">내용:</label>
+   		<textarea id="cContent" name="cContent" rows="4" cols="50"></textarea><br>
+   		<button type="button" id="regComment">댓글 작성</button>
+   	</div>
+    <!-- </form> -->
+    
+    <!-- 댓글 목록 -->
+    <h2>댓글</h2>
+    
+	<!-- 댓글 목록이 업데이트될 div -->
+	<div id="commentSection"></div>
+	
+    <c:choose>
+	    <c:when test="${empty searchparam.searchOption && empty searchparam.searchKeyword}">
+	    	<a href="/list?page=${page}">목록으로 돌아가기</a>
+	    </c:when>
+	    <c:otherwise>
+	    	<a href="/list?page=${page}&searchOption=${searchparam.searchOption}&searchKeyword=${searchparam.searchKeyword}">목록으로 돌아가기</a>
+	    </c:otherwise>
+	</c:choose>
+	
+	<script>
+	function loadComments() {
+		$.ajax({
+			url: '/commentList',
+			type: 'GET',
+			data: {
+				bId: '${board.bId}',
+		    	page: '${page}',
+		    	searchOption: '${searchparam.searchOption}',
+		    	searchKeyword: '${searchparam.searchKeyword}',
+		    	uId: '${principal.username }',
+		    	cId: '${comment.cId}',
+		    	cContent: '${comment.cContent}'
+			},
+			success: function(response) {
+				$('#commentSection').html(response);
+			}
+		})
+	}
+	
+	$(function() {
+		
+		loadComments();
+		
+		// 답글버튼을 눌렀을때 대댓글폼 보이기
+		$(document).on('click','.replyForm', function(){
+			$(this).next('div').toggle();
+		});
+		
+		// 취소 버튼 눌렀을때 폼 숨기기
+		$(document).on('click', '.cancelReply', function(){
+			$(this).parent().hide();
+		});
+		
+		// 등록버튼 클릭시
+		$(document).on('click', '.addReply', function(){
+			const cId = $(this).attr('cId');
+			const group = $(this).attr('group');
+			const order = $(this).attr('order');
+			const depth = $(this).attr('depth');
+			const $form = $(this).closest('div');
+			const replyContent = $form.find('textarea').val();
+			
+			$.ajax({
+				type: "POST",
+				url: "/addComment",
+				data: {
+			    	bId: '${board.bId}',
+			    	page: '${page}',
+			    	searchOption: '${searchparam.searchOption}',
+			    	searchKeyword: '${searchparam.searchKeyword}',
+			    	uId: '${principal.username }',
+					cContent: replyContent,
+					parentId: cId,
+					group: group,
+					order: order,
+					depth: depth
+				},
+				success: function() {
+					loadComments();
+				}
+			});
+		});
+		
+		$(document).on('click', '#regComment', function() {
+			const $form = $(this).closest('div');
+			const commentContent = $form.find('textarea').val();
+			
+			$.ajax({
+				type: "POST",
+				url: "/addComment",
+				data: {
+					bId: '${board.bId}',
+			    	page: '${page}',
+			    	searchOption: '${searchparam.searchOption}',
+			    	searchKeyword: '${searchparam.searchKeyword}',
+			    	uId: '${principal.username }',
+			    	cContent: commentContent,
+			    	group: 0,
+			    	order: 1,
+			    	depth: 0
+				},
+				success: function() {
+					loadComments();
+				}
+			});
+		});
+		
+		$(document).on('click', '.commentEditForm', function(){
+			const cId = $(this).attr('cId');
+			const cContent = $(this).attr('cContent');
+			
+			const $commentEditForm = $(this).closest('.commentBox').find('.editForm');
+			$commentEditForm.find('textarea').val(cContent);
+			
+			$commentEditForm.toggle();
+		});
+		
+		// 수정취소버튼
+		$(document).on('click', '.cancelEdit', function(){
+			$(this).parent().hide();
+		});
+		
+		$(document).on('click', '.updateEdit', function(){
+			const $form = $(this).closest('div');
+			const updateContent = $form.find('textarea').val();
+			const commentId = $(this).attr('cId');
+			
+			$.ajax({
+				type: "POST",
+				url: "/updateComment",
+				data: {
+					bId: '${board.bId}',
+			    	page: '${page}',
+			    	searchOption: '${searchparam.searchOption}',
+			    	searchKeyword: '${searchparam.searchKeyword}',
+			    	uId: '${principal.username}',
+			    	cContent: updateContent,
+			    	cId: commentId
+				},
+				success: function() {
+					loadComments();
+				}
+			});
+		});
+		
+		$(document).on('click', '.deleteComment', function(){
+			const commentId = $(this).data('comment-id');
+			
+			$.ajax({
+				type: "POST",
+				url: "/deleteComment",
+				data: {
+					bId: '${board.bId}',
+			    	cId: commentId
+				},
+				success: function() {
+					loadComments();
+				}
+			});
+		});
+	});
+	</script>
+	
+</body>
+</html>

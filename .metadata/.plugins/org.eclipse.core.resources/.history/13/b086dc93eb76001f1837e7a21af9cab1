@@ -1,0 +1,41 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
+<sec:authentication property="principal" var="principal"/>
+
+<c:forEach var="comment" items="${comments}">
+    <div style="margin-left: ${comment.depth * 50}px;" class="commentList">
+    	<p><strong>작성자 </strong>${comment.cWriter}</p>
+    	<p><strong>내용 </strong>${comment.cContent}</p>
+    	<p><strong>작성일시 </strong>${comment.cDatetime}</p>
+    	<input type="hidden" name="group" value="${comment.group}">
+		<input type="hidden" name="order" value="${comment.order}">
+		<input type="hidden" name="depth" value="${comment.depth}">
+    		
+	   	<!-- 본인 댓글만 수정버튼표시 -->
+	   	<button class="commentEditForm" data-comment-id="${comment.cId }" data-content="${comment.cContent }">수정</button>
+    	<div class="editForm_${comment.cId }" style="display:none;">
+    		<textarea cols="80" rows="3"></textarea>
+	        <button type="button" class="cancelEdit">취소</button>
+	        <button type="button" class="updateEdit">등록</button>
+    	</div>
+	    <!-- ADMIN 권한일 때 모든 댓글에 삭제 버튼 표시 -->
+	   
+	    <!-- USER 권한일 때 본인의 댓글에만 삭제 버튼 표시 -->
+	    
+	    <button class="deleteComment" data-comment-id="${comment.cId }">삭제</button>
+	    
+	    <button class="replyForm">답글</button>
+        <div style="display: none;">
+        	<textarea cols="80" rows="2"></textarea>
+        	<button type="button" class="cancelReply">취소</button>
+        	<button type="button" class="addReply" cId="${comment.cId }"
+        	group="${comment.group}" order="${comment.order }" depth="${comment.depth }">등록</button>
+        	<input type="hidden" name="group" value="${comment.group}">
+			<input type="hidden" name="order" value="${comment.order}">
+			<input type="hidden" name="depth" value="${comment.depth}">
+        </div>
+  	</div>
+</c:forEach>
