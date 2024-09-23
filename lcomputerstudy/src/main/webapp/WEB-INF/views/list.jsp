@@ -19,7 +19,7 @@
 		text-overflow: ellipsis;
 	}
 	.table-info {
-		border-bottom: 2px solid ;
+		border-bottom: 2px solid gray;
 	}
 	.table-rounded {
 		border-radius: 0.5rem;

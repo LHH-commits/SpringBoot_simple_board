@@ -37,16 +37,52 @@
 	}
 	
 </script>
+<style>
+	.table-rounded {
+		border-radius:0.5rem;
+		overflow: hidden;	
+	}
+	.table-fixed {
+		table-layout: fixed;
+		width: 100%;
+	}
+	.table-fixed th {
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+</style>
 </head>
 <body>
-	<h1>게시물 상세</h1>
-	<div>
-        <p><strong>제목:</strong> ${board.bTitle}</p>
-        <p><strong>작성자:</strong> ${board.bWriter}</p>
-        <p><strong>작성일시:</strong> ${board.bDateTime}</p>
-        <p><strong>내용:</strong> ${board.bContent}</p>
-        <p><strong>조회수:</strong> ${board.bViews}</p>
-    </div>
+<div class="container-md mt-4" style="max-width:900px">
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<h3>게시물 상세</h3>
+	</div>
+	<div class="table-responsive">
+	    <table class="table table-rounded">
+	    <thead class="table">
+            <tr>
+                <th style="width: 20%">제목</th>   
+                <th style="width: 8%">작성자</th>
+                <th style="width: 10%">작성일시</th>
+                <th style="width: 5%">조회수</th>
+            </tr>
+        </thead>
+	    <tbody>
+            <tr>
+                <td>${board.bTitle }</td>
+                <td>${board.bWriter}</td>
+                <td>${board.bDateTime}</td>
+                <td>${board.bViews}</td>
+            </tr>
+        </tbody>
+	    </table>
+	</div>
+	<div class="mt-4">
+	    <h6 class="fw-bold">내용</h6>
+	    <div class="border p-3 rounded" style="max-height: 300px; overflow-y: auto;">
+	    	${board.bContent}
+	    </div>
+	</div>
     <sec:authentication property="principal" var="principal"/>
     <!-- 확인용 코드 -->
     <p>작성자: ${board.user.username}</p>
@@ -71,7 +107,7 @@
     </sec:authorize>
     
     <!-- 댓글 작성 폼 -->
-    <h2>댓글 작성</h2>
+    <h3>댓글 작성</h3>
    	<div>
    		<label for="cContent" id="commentForm">내용:</label>
    		<textarea id="cContent" name="cContent" rows="4" cols="50"></textarea><br>
@@ -92,7 +128,7 @@
 	    	<a href="/list?page=${page}&searchOption=${searchparam.searchOption}&searchKeyword=${searchparam.searchKeyword}">목록으로 돌아가기</a>
 	    </c:otherwise>
 	</c:choose>
-	
+</div>
 	<script>
 	function loadComments() {
 		$.ajax({
