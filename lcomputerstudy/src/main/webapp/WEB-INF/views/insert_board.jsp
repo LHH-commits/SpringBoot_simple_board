@@ -7,28 +7,32 @@
 <head>
 <meta charset="UTF-8">
 <title>게시물 작성</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </head>
 <body>
-	<h1>게시물 작성</h1>
-	
-	<!-- 현재 로그인한 사용자의 이름(작성자)을 가져오기 -->
-	<sec:authentication property="principal" var="principal"/>
-	<c:set var="uName" value="${principal.uName}"/>
-	
-	<form action="/insertBoard" method="post">
-	<input type="hidden" name="bWriter" value="${uName }">
-	<input type="hidden" name="username" value="${username }">
-        <table>
-            <tr>
-                <td>제목:</td>
-                <td><input type="text" name="bTitle" required/></td>
-            </tr>
-            <tr>
-                <td>내용:</td>
-                <td><textarea name="bContent" required></textarea></td>
-            </tr>
+	<div class="container mt-4" style="max-width:900px">
+		<h2>게시물 작성</h2>
+		<!-- 현재 로그인한 사용자의 이름(작성자)을 가져오기 -->
+		<sec:authentication property="principal" var="principal"/>
+		<c:set var="uName" value="${principal.uName}"/>
+		
+		<form action="/insertBoard" method="post">
+		<input type="hidden" name="bWriter" value="${uName }">
+		<input type="hidden" name="username" value="${username }">
+        <table class="table table-rounded">
+            <div class="mb-3">
+                <label for="bTitle" class="form-label">제목:</label>
+                <input type="text" class="form-control" id="bTitle" name="bTitle" required/>
+            </div>
+            <div class="mb-3">
+                <label for="bContent" class="form-label">내용:</label>
+                <textarea class="form-control" id="bContent" name="bContent" rows="5" style="height: 150px; overflow-y: auto;" required></textarea>
+            </div>
         </table>
-        <button type="submit">게시물 작성</button>
-    </form>
+	        <button type="submit" class="btn btn-primary btn-md">게시물 작성</button>
+	    </form>
+    </div>
 </body>
 </html>
