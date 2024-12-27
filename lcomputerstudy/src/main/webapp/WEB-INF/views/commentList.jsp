@@ -7,37 +7,59 @@
 
 <div id="commentList">
 	<c:forEach var="comment" items="${comments}">
-	    <div style="margin-left: ${comment.depth * 50}px;" class="commentBox">
-	    	<p><strong>작성자 </strong>${comment.cWriter}</p>
-	    	<p><strong>내용 </strong>${comment.cContent}</p>
-	    	<p><strong>작성일시 </strong>${comment.cDatetime}</p>
-	    	<input type="hidden" name="group" value="${comment.group}">
-			<input type="hidden" name="order" value="${comment.order}">
-			<input type="hidden" name="depth" value="${comment.depth}">
+	    <div style="margin-left: ${comment.depth * 50}px;" class="commentBox card mb-3">
+	    	<div class="card-body">
+	    		<div class="d-flex justify-content-between align-items-center mb-2">
+	    			<h6 class="card-subtitle text-muted mb-0">작성자: ${comment.cWriter}</h6>
+	    			<small class="text-muted">${comment.cDatetime}</small>
+	    		</div>
+	    		<p class="card-text border-bottom pb-3">${comment.cContent}</p>
 	    		
-		   	<!-- 본인 댓글만 수정버튼표시 -->
-		   	<sec:authorize access="isAuthenticated()">
-		   		<c:if test="${principal.username == comment.username}">
-				   	<button class="commentEditForm" cId="${comment.cId }" cContent="${comment.cContent }">수정</button>
-			    	<div class="editForm" style="display:none;">
-			    		<textarea cols="80" rows="3"></textarea>
-				        <button type="button" class="cancelEdit">취소</button>
-				        <button type="button" class="updateEdit" cId="${comment.cId }">등록</button>
-			    	</div>
-		    	</c:if>
-	    	</sec:authorize>
-		    <!-- ADMIN 권한일 때 모든 댓글에 삭제 버튼 표시 -->
-		   <sec:authorize access="hasRole('ROLE_ADMIN') or (hasRole('ROLE_USER') and principal.username == #comment.username)">
-		    <!-- USER 권한일 때 본인의 댓글에만 삭제 버튼 표시 -->
-		    	<button class="deleteComment" data-comment-id="${comment.cId }">삭제</button>
-		    </sec:authorize>
-		    <button class="replyForm">답글</button>
-	        <div style="display: none;">
-	        	<textarea cols="80" rows="2"></textarea>
-	        	<button type="button" class="cancelReply">취소</button>
-	        	<button type="button" class="addReply" cId="${comment.cId }"
-	        	group="${comment.group}" order="${comment.order}" depth="${comment.depth}">등록</button>
-	        </div>
-	  	</div>
+	    		<input type="hidden" name="group" value="${comment.group}">
+	    		<input type="hidden" name="order" value="${comment.order}">
+	    		<input type="hidden" name="depth" value="${comment.depth}">
+	    		
+	    		<div class="btn-group">
+	    			<!-- 본인 댓글만 수정버튼표시 -->
+	    			<sec:authorize access="isAuthenticated()">
+	    				<c:if test="${principal.username == comment.username}">
+	    					<button class="btn btn-sm btn-outline-primary commentEditForm" 
+	    							cId="${comment.cId}" cContent="${comment.cContent}">수정</button>
+	    				</c:if>
+	    			</sec:authorize>
+	    			
+	    			<!-- 삭제 버튼 권한 -->
+	    			<sec:authorize access="hasRole('ROLE_ADMIN') or (hasRole('ROLE_USER') and principal.username == #comment.username)">
+	    				<button class="btn btn-sm btn-outline-danger deleteComment" 
+	    						data-comment-id="${comment.cId}">삭제</button>
+	    			</sec:authorize>
+	    			
+	    			<button class="btn btn-sm btn-outline-secondary replyForm">답글</button>
+	    		</div>
+	    		
+	    		<!-- 수정 폼 -->
+	    		<div class="editForm mt-3" style="display:none;">
+	    			<textarea class="form-control mb-2" cols="80" rows="3"></textarea>
+	    			<div>
+	    				<button type="button" class="btn btn-sm btn-secondary cancelEdit">취소</button>
+	    				<button type="button" class="btn btn-sm btn-primary updateEdit" 
+	    						cId="${comment.cId}">등록</button>
+	    			</div>
+	    		</div>
+	    		
+	    		<!-- 답글 폼 - 이 부분을 card-body 바로 아래로 이동 -->
+	    		<div class="replyFormContainer mt-3" style="display:none;">
+	    			<textarea class="form-control mb-2" cols="80" rows="2"></textarea>
+	    			<div>
+	    				<button type="button" class="btn btn-sm btn-secondary cancelReply">취소</button>
+	    				<button type="button" class="btn btn-sm btn-primary addReply" 
+	    						cId="${comment.cId}" 
+	    						group="${comment.group}" 
+	    						order="${comment.order}" 
+	    						depth="${comment.depth}">등록</button>
+	    			</div>
+	    		</div>
+	    	</div>
+	    </div>
 	</c:forEach>
 </div>

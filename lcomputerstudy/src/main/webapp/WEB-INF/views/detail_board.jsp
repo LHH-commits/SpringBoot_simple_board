@@ -58,8 +58,8 @@
 		<h3>게시물 상세</h3>
 	</div>
 	<div class="table-responsive">
-	    <table class="table table-rounded">
-	    <thead class="table">
+	    <table class="table table-bordered table-rounded">
+	    <thead class="table-light">
             <tr>
                 <th style="width: 20%">제목</th>   
                 <th style="width: 8%">작성자</th>
@@ -69,65 +69,81 @@
         </thead>
 	    <tbody>
             <tr>
-                <td>${board.bTitle }</td>
-                <td>${board.bWriter}</td>
-                <td>${board.bDateTime}</td>
-                <td>${board.bViews}</td>
+                <td class="align-middle">${board.bTitle}</td>
+                <td class="align-middle">${board.bWriter}</td>
+                <td class="align-middle">${board.bDateTime}</td>
+                <td class="text-center align-middle">${board.bViews}</td>
             </tr>
         </tbody>
 	    </table>
 	</div>
 	<div class="mt-4">
-	    <h6 class="fw-bold">내용</h6>
-	    <div class="border p-3 rounded" style="max-height: 300px; overflow-y: auto;">
-	    	${board.bContent}
+	    <div class="card">
+	        <div class="card-header">
+	            <h6 class="fw-bold mb-0">내용</h6>
+	        </div>
+	        <div class="card-body" style="min-height: 200px; max-height: 500px; overflow-y: auto;">
+	            <p class="card-text">${board.bContent}</p>
+	        </div>
 	    </div>
 	</div>
     <sec:authentication property="principal" var="principal"/>
-    <!-- 확인용 코드 -->
-    <p>작성자: ${board.user.username}</p>
-	<p>로그인 사용자: ${principal.username}</p>
-    <!-- 수정 버튼 권한 -->
-    <!-- 현재 로그인한 u_id가 작성자 u_id가 같을때 수정버튼이 뜬다 -->
-    <sec:authorize access="isAuthenticated()">
-    	<c:if test="${board.user.username == principal.username}">
-    		<button type="button" onclick="location.href='/editBoard?bId=${board.bId}&page=${page}'">수정</button>
-    	</c:if>
-    </sec:authorize>
-  	<!-- 삭제 버튼 권한 -->
-    <!-- 관리자 권한을 가지고 있다면 삭제버튼이 모든 게시물에 뜬다 -->
-    <sec:authorize access="hasRole('ROLE_ADMIN')">
-    	<button type="button" onclick="confirmDelete(${board.bId})">삭제</button>
-    </sec:authorize>
-    <!-- 관리자 권한을 가지고 있지 않다면 현재 로그인한 u_id가 작성자 u_id가 같을때 버튼이 뜬다 -->
-    <sec:authorize access="!hasRole('ROLE_ADMIN')">
-        <c:if test="${board.user.username == principal.username}">
-            <button type="button" onclick="confirmDelete(${board.bId})">삭제</button>
-        </c:if>
-    </sec:authorize>
+    <!-- 버튼 그룹 -->
+    <div class="d-flex justify-content-between mt-4">
+        <div class="d-flex gap-2">
+            <sec:authorize access="isAuthenticated()">
+                <c:if test="${board.user.username == principal.username}">
+                    <button type="button" class="btn btn-outline-primary" 
+                        onclick="location.href='/editBoard?bId=${board.bId}&page=${page}'">수정</button>
+                </c:if>
+            </sec:authorize>
+            <sec:authorize access="hasRole('ROLE_ADMIN')">
+                <button type="button" class="btn btn-outline-danger" 
+                    onclick="confirmDelete(${board.bId})">삭제</button>
+            </sec:authorize>
+            <sec:authorize access="!hasRole('ROLE_ADMIN')">
+                <c:if test="${board.user.username == principal.username}">
+                    <button type="button" class="btn btn-outline-danger" 
+                        onclick="confirmDelete(${board.bId})">삭제</button>
+                </c:if>
+            </sec:authorize>
+        </div>
+        <div>
+            <c:choose>
+                <c:when test="${empty searchparam.searchOption && empty searchparam.searchKeyword}">
+                    <a href="/list?page=${page}" class="btn btn-secondary">목록으로 돌아가기</a>
+                </c:when>
+                <c:otherwise>
+                    <a href="/list?page=${page}&searchOption=${searchparam.searchOption}&searchKeyword=${searchparam.searchKeyword}" 
+                       class="btn btn-secondary">목록으로 돌아가기</a>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>
     
     <!-- 댓글 작성 폼 -->
-    <h3>댓글 작성</h3>
-   	<div>
-   		<label for="cContent" id="commentForm">내용:</label>
-   		<textarea id="cContent" name="cContent" rows="4" cols="50"></textarea><br>
-   		<button type="button" id="regComment">댓글 작성</button>
-   	</div>
+    <div class="card mt-4 mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">댓글 작성</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="cContent" class="form-label">내용</label>
+                <textarea class="form-control" id="cContent" name="cContent" rows="3"></textarea>
+            </div>
+            <button type="button" id="regComment" class="btn btn-primary">댓글 작성</button>
+        </div>
+    </div>
     
     <!-- 댓글 목록 -->
-    <h2>댓글</h2>
-    
-	<!-- 댓글 목록이 업데이트될 div -->
-	<div id="commentSection"></div>
-	
-    <c:choose>
-	    <c:when test="${empty searchparam.searchOption && empty searchparam.searchKeyword}">
-	    	<a href="/list?page=${page}">목록으로 돌아가기</a>
-	    </c:when>
-	    <c:otherwise>
-	    	<a href="/list?page=${page}&searchOption=${searchparam.searchOption}&searchKeyword=${searchparam.searchKeyword}">목록으로 돌아가기</a>
-	    </c:otherwise>
-	</c:choose>
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">댓글</h5>
+        </div>
+        <div class="card-body">
+            <div id="commentSection"></div>
+        </div>
+    </div>
 </div>
 	<script>
 	function loadComments() {
@@ -155,12 +171,12 @@
 		
 		// 답글버튼을 눌렀을때 대댓글폼 보이기
 		$(document).on('click','.replyForm', function(){
-			$(this).next('div').toggle();
+			$(this).closest('.card-body').find('.replyFormContainer').toggle();
 		});
 		
 		// 취소 버튼 눌렀을때 폼 숨기기
 		$(document).on('click', '.cancelReply', function(){
-			$(this).parent().hide();
+			$(this).closest('.replyFormContainer').hide();
 		});
 		
 		// 등록버튼 클릭시
@@ -169,18 +185,18 @@
 			const group = $(this).attr('group');
 			const order = $(this).attr('order');
 			const depth = $(this).attr('depth');
-			const $form = $(this).closest('div');
+			const $form = $(this).closest('.replyFormContainer');
 			const replyContent = $form.find('textarea').val();
 			
 			$.ajax({
 				type: "POST",
 				url: "/addComment",
 				data: {
-			    	bId: '${board.bId}',
-			    	page: '${page}',
-			    	searchOption: '${searchparam.searchOption}',
-			    	searchKeyword: '${searchparam.searchKeyword}',
-			    	uId: '${principal.username }',
+					bId: '${board.bId}',
+					page: '${page}',
+					searchOption: '${searchparam.searchOption}',
+					searchKeyword: '${searchparam.searchKeyword}',
+					uId: '${principal.username }',
 					cContent: replyContent,
 					parentId: cId,
 					group: group,
@@ -189,6 +205,8 @@
 				},
 				success: function() {
 					loadComments();
+					$form.hide();
+					$form.find('textarea').val('');
 				}
 			});
 		});
@@ -229,7 +247,7 @@
 		
 		// 수정취소버튼
 		$(document).on('click', '.cancelEdit', function(){
-			$(this).parent().hide();
+			$(this).closest('.editForm').hide();
 		});
 		
 		$(document).on('click', '.updateEdit', function(){

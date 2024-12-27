@@ -38,8 +38,8 @@
                 <td class="fw-bold bg-info-subtle align-middle text-center">
                 <label for="bContent" class="form-label">내용</label></td>
                 <td class="bg-light">
-                	<div contenteditable="true" class="form-control"
-                    style="height: 150px; overflow-y: auto;" required></div>
+                	<textarea class="form-control" id="bContent" name="bContent" 
+                          style="height: 150px; resize: none;" required></textarea>
                 </td>
             </tr>
         </table>
