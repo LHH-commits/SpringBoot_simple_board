@@ -83,7 +83,7 @@
 	            <h6 class="fw-bold mb-0">내용</h6>
 	        </div>
 	        <div class="card-body" style="min-height: 200px; max-height: 500px; overflow-y: auto;">
-	            <p class="card-text">${board.bContent}</p>
+	            <div style="white-space: pre-line;">${board.bContent}</div>
 	        </div>
 	    </div>
 	</div>

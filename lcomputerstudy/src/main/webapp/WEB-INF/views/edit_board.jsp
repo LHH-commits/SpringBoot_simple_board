@@ -56,7 +56,7 @@
                 </td>
                 <td class="bg-light">
                     <textarea class="form-control" id="bContent" name="bContent" 
-                              style="height: 150px; resize: none;" required>${board.bContent}</textarea>
+                              style="height: 150px; resize: none; white-space: pre-wrap;" required>${board.bContent}</textarea>
                 </td>
             </tr>
         </table>

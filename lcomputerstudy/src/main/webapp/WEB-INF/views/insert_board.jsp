@@ -39,7 +39,8 @@
                 <label for="bContent" class="form-label">내용</label></td>
                 <td class="bg-light">
                 	<textarea class="form-control" id="bContent" name="bContent" 
-                          style="height: 150px; resize: none;" required></textarea>
+                          style="height: 150px; white-space: pre-line;" 
+                          required>${board.bContent}</textarea>
                 </td>
             </tr>
         </table>
