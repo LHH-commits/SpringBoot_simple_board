@@ -2,6 +2,7 @@
 - Spring Boot 기반의 MVC 구조를 익히고자 만든 개인 프로젝트입니다
 - 간단한 게시판 형식의 프로젝트입니다
 - 대댓글 시스템의 구현 및 리스트의 로드를 비동기처리 방식(AJAX)으로 처리하였습니다
+- Spring Security를 이용하여 사용자 인증/인가를 구현했습니다
 
 ## 🛠 개발 환경
 - **Tool**: STS (Spring Tool Suite), VS Code, HeidiSQL
